@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { URL_API } from '../configuracion';
 
 /**
  * Forma de lo que devuelve el backend al iniciar sesion
@@ -20,7 +21,7 @@ export interface Sesion {
 @Injectable({ providedIn: 'root' }) //Una sola instancia para toda la aplicacion
 export class Autenticacion {
   private readonly http = inject(HttpClient); //Pieza que hace las peticiones HTTP
-  private readonly urlBase = 'http://localhost:8080/JasperSchoolBackend/api/v1';
+  private readonly urlBase = URL_API;
 
   /**
    * Manda el correo y la contrasena al backend.

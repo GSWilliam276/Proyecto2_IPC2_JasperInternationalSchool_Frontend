@@ -1,7 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
+import { interceptorSesion } from './interceptores/interceptor-sesion-interceptor';
 
 /**
  * Configuracion global de la aplicacion.
@@ -9,8 +10,9 @@ import { routes } from './app.routes';
  */
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), //Activa el sistema de rutas
-    provideHttpClient(), //Permite hacer peticiones HTTP al backend
+    provideBrowserGlobalErrorListeners(), //Activa el sistema de rutas
+    provideRouter(routes),
+    //Registra el interceptor para que actue en todas las peticiones
+    provideHttpClient(withInterceptors([interceptorSesion])),//Permite hacer peticiones HTTP al backend
   ],
 };
