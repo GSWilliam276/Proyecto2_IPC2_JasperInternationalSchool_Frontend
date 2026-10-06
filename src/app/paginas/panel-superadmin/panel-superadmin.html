@@ -1,0 +1,17 @@
+<main class="min-h-screen bg-fondo">
+  <header class="bg-primario-oscuro text-white px-6 py-4 flex items-center justify-between">
+    <h1 class="text-lg font-semibold">Jasper International School</h1>
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-primario-claro">{{ sesion?.nombre }} ({{ sesion?.rol }})</span>
+      <button type="button" (click)="cerrarSesion()"
+        class="text-sm bg-primario rounded-lg px-3 py-1 hover:bg-primario-claro hover:text-primario-oscuro transition-colors">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <section class="p-6">
+    <h2 class="text-xl font-semibold text-texto">Panel del SuperAdmin</h2>
+    <p class="text-sm text-texto mt-1">Aquí irán los módulos de administración.</p>
+  </section>
+</main>

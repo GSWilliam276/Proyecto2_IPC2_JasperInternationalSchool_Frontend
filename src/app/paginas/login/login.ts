@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router'; //Sirve para navegar a otra pantalla
 import { Autenticacion } from '../../servicios/autenticacion';
 
 /**
@@ -16,14 +17,15 @@ export class Login {
   //El inject() le pide a Angular una pieza ya construida, en vez de crearla con new
   private readonly fb = inject(FormBuilder);
   private readonly autenticacion = inject(Autenticacion);
+  private readonly router = inject(Router); //El que cambia de pantalla
 
   //Signal es una variable que avisa a la pantalla cuando cambia su valor,
   //asi el HTML se actualiza solo. Se lee como funcion: cargando()
   protected readonly cargando = signal(false); //true mientras se espera al backend
   protected readonly error = signal(''); //mensaje de error para mostrar
-  protected readonly bienvenida = signal(''); //mensaje de exito (temporal, es de prueba)
+  //se elimino "bienvenida", era temporal y ahora se redirige al panel
 
-  //El formulario con sus validaciones. Cada campo empieza vacio 
+  //El formulario con sus validaciones. Cada campo empieza vacio
   //y lleva una lista de reglas que debe cumplir.
   protected readonly formulario = this.fb.nonNullable.group({
     correo: ['', [Validators.required, Validators.email]],
@@ -49,7 +51,8 @@ export class Login {
       //next: el backend respondio con exito (200)
       next: (sesion) => {
         this.cargando.set(false);
-        this.bienvenida.set(`${sesion.nombre} (${sesion.rol})`);
+        //segun el rol, cada persona entra a su propio panel
+        this.router.navigate([this.rutaPorRol(sesion.rol)]);
       },
       //error: el backend respondio con 401 u otro error, o no se pudo conectar
       error: (e) => {
@@ -58,5 +61,18 @@ export class Login {
         this.error.set(e.error?.mensaje ?? 'No se pudo conectar con el servidor');
       },
     });
+  }
+
+  /**
+   * Devuelve la ruta del panel que le corresponde a cada rol
+   * Se ira completando conforme existan los paneles de los demas roles
+   */
+  private rutaPorRol(rol: string): string {
+    switch (rol) {
+      case 'SUPERADMIN':
+        return '/superadmin';
+      default:
+        return '/sin-acceso'; //los demas paneles todavia no existen por el momento
+    }
   }
 }

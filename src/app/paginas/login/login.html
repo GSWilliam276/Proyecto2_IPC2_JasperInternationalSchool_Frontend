@@ -54,13 +54,6 @@
         <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
       }
 
-      <!-- Mensaje temporal de prueba. Se reemplaza por una redireccion al panel. -->
-      @if (bienvenida()) {
-        <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2">
-          Sesión iniciada: {{ bienvenida() }}
-        </p>
-      }
-
       <!--
         [disabled] desactiva el boton mientras se espera al backend,
         para que no se pueda enviar dos veces seguidas.
