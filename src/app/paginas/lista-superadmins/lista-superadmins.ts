@@ -1,9 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Superadmins, UsuarioResumen } from '../../servicios/superadmins';
+import { FormularioSuperadmin } from '../formulario-superadmin/formulario-superadmin';
 
-/** Listado paginado de SuperAdmins, con busqueda y activar/desactivar. */
+/** Listado paginado de SuperAdmins, con busqueda y activar/desactivar */
 @Component({
   selector: 'app-lista-superadmins',
+  imports: [FormularioSuperadmin],
   templateUrl: './lista-superadmins.html',
 })
 export class ListaSuperadmins implements OnInit {
@@ -44,7 +46,7 @@ export class ListaSuperadmins implements OnInit {
     });
   }
 
-  /** Espera 350 ms despues de la ultima tecla antes de consultar (debounce). */
+  /** Espera 350 ms despues de la ultima tecla antes de consultar (debounce) */
   protected alEscribir(texto: string): void {
     clearTimeout(this.temporizador);
     this.temporizador = setTimeout(() => {
@@ -104,5 +106,14 @@ export class ListaSuperadmins implements OnInit {
         this.error.set(e.error?.mensaje ?? 'No se pudo completar la acción');
       },
     });
+  }
+
+  protected readonly creando = signal(false); //true = el formulario esta abierto
+
+  /** La persona termino de crear: se cierra el formulario y se recarga desde la primera pagina */
+  protected alCrear(): void {
+    this.creando.set(false);
+    this.pagina.set(1);
+    this.cargar();
   }
 }

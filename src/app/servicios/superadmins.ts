@@ -14,6 +14,16 @@ export interface UsuarioResumen {
   estado: string;
 }
 
+/** Datos del formulario de creacion (coincide con SolicitudCrearUsuario del backend). */
+export interface SolicitudCrearUsuario {
+  cui: string;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  direccion: string;
+  contrasena: string;
+}
+
 /** Consultas de SuperAdmin al backend (parte de CU010). */
 @Injectable({ providedIn: 'root' })
 export class Superadmins {
@@ -27,6 +37,10 @@ export class Superadmins {
     }
     //Aqui no se agrega el token: lo pega el interceptor
     return this.http.get<UsuarioResumen[]>(`${URL_API}/superadmins`, { params });
+  }
+
+  crear(datos: SolicitudCrearUsuario): Observable<UsuarioResumen> {
+    return this.http.post<UsuarioResumen>(`${URL_API}/superadmins`, datos);
   }
 
   activar(id: number): Observable<void> {
