@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
+import { ListaSuperadmins } from '../lista-superadmins/lista-superadmins';
 
 /**
  * Panel del SuperAdmin. Por ahora solo muestra quien inicio sesion
@@ -8,6 +9,7 @@ import { Autenticacion } from '../../servicios/autenticacion';
  */
 @Component({
   selector: 'app-panel-superadmin',
+  imports: [ListaSuperadmins], //para poder usar <app-lista-superadmins> en el HTML
   templateUrl: './panel-superadmin.html',
 })
 export class PanelSuperadmin {
