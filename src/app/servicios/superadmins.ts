@@ -28,4 +28,12 @@ export class Superadmins {
     //Aqui no se agrega el token: lo pega el interceptor
     return this.http.get<UsuarioResumen[]>(`${URL_API}/superadmins`, { params });
   }
+
+  activar(id: number): Observable<void> {
+    return this.http.put<void>(`${URL_API}/superadmins/${id}/activar`, null);
+  }
+
+  desactivar(id: number): Observable<void> {
+    return this.http.put<void>(`${URL_API}/superadmins/${id}/desactivar`, null);
+  }
 }
