@@ -8,6 +8,7 @@ import { rolGuard } from './guards/rol-guard';
 import { Bienvenida } from './paginas/bienvenida/bienvenida';
 import { ListaAdmins } from './paginas/lista-admins/lista-admins';
 import { ListaAniosLectivos } from './paginas/lista-anios-lectivos/lista-anios-lectivos';
+import { ListaGrados } from './paginas/lista-grados/lista-grados';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -39,6 +40,12 @@ export const routes: Routes = [
       {
         path: 'anios-lectivos',
         component: ListaAniosLectivos,
+        canActivate: [rolGuard],
+        data: { roles: ['SUPERADMIN'] },
+      },
+      {
+        path: 'grados',
+        component: ListaGrados,
         canActivate: [rolGuard],
         data: { roles: ['SUPERADMIN'] },
       },
