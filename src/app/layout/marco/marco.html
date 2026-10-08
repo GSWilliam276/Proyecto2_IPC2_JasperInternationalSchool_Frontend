@@ -1,0 +1,50 @@
+<div class="min-h-screen flex bg-fondo">
+
+  <!-- Menu lateral -->
+  <aside class="w-60 bg-primario-oscuro text-white flex flex-col">
+    <div class="flex items-center gap-3 px-5 py-5 border-b border-white/10">
+      <img src="logo-claro.svg" alt="Logo de Jasper International School" class="h-10 w-auto" />
+      <span class="text-sm font-semibold leading-tight">Jasper International School</span>
+    </div>
+
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      @for (opcion of menu; track opcion.ruta) {
+        <!-- routerLinkActive agrega la clase "activo" al enlace de la pantalla en la que se esta -->
+        <a [routerLink]="opcion.ruta" routerLinkActive="bg-primario text-white"
+          class="block rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
+          {{ opcion.etiqueta }}
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <!-- Zona derecha: barra superior, contenido y pie -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <header class="bg-white shadow-sm px-6 py-3 flex items-center justify-end gap-4">
+      <div class="text-right">
+        <p class="text-sm font-medium text-texto">{{ sesion?.nombre }}</p>
+        <span class="inline-block text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">
+          {{ sesion?.rol }}
+        </span>
+      </div>
+      <!-- avatar con iniciales -->
+      <div class="h-9 w-9 rounded-full bg-primario text-white flex items-center justify-center text-sm font-semibold">
+        {{ iniciales }}
+      </div>
+      <button type="button" (click)="cerrarSesion()"
+        class="text-sm rounded-lg border border-gray-300 px-3 py-1 text-texto hover:bg-gray-50">
+        Cerrar sesión
+      </button>
+    </header>
+
+    <!-- Aqui Angular muestra la pantalla que corresponde a la ruta actual -->
+    <main class="flex-1 p-6">
+      <router-outlet />
+    </main>
+
+    <footer class="px-6 py-3 text-xs text-gray-500 border-t border-gray-200">
+      Jasper International School · {{ anio }}
+    </footer>
+  </div>
+</div>
