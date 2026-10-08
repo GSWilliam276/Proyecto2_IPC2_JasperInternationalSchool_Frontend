@@ -47,6 +47,7 @@ export class Marco {
           return [
             { ruta: '/superadmin', etiqueta: 'Super Administradores' },
             { ruta: '/admins', etiqueta: 'Administradores' },
+            { ruta: '/anios-lectivos', etiqueta: 'Años lectivos' },
           ];
         default:
           return [];
