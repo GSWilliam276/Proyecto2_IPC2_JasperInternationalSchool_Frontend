@@ -1,0 +1,96 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Administradores</h2>
+  <p class="text-sm text-gray-500">Personal con acceso a la gestión del colegio</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex items-center gap-3">
+      <input type="search" placeholder="Buscar por nombre o correo"
+        (input)="alEscribir($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Nuevo Administrador
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Nombre</th>
+          <th class="px-3 py-2">Correo</th>
+          <th class="px-3 py-2">Teléfono</th>
+          <th class="px-3 py-2">CUI</th>
+          <th class="px-3 py-2">Estado</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of usuarios(); track u.idUsuario) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">{{ u.nombre }}</td>
+            <td class="px-3 py-2">{{ u.correo }}</td>
+            <td class="px-3 py-2">{{ u.telefono }}</td>
+            <td class="px-3 py-2">{{ u.cui }}</td>
+            <td class="px-3 py-2">{{ u.estado }}</td>
+            <td class="px-3 py-2">
+              <button type="button" (click)="pedirConfirmacion(u)"
+                class="text-xs rounded-lg px-3 py-1 text-white"
+                [class.bg-acento]="u.estado === 'ACTIVO'"
+                [class.bg-primario]="u.estado !== 'ACTIVO'">
+                {{ u.estado === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron resultados' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+<!-- Modal de confirmacion: aparece solo cuando hay una fila pendiente -->
+@if (pendiente(); as u) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Confirmar acción</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Desea {{ u.estado === 'ACTIVO' ? 'desactivar' : 'activar' }} a {{ u.nombre }}?
+      </p>
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="cancelar()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmar()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+          {{ procesando() ? 'Procesando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Formulario de creacion: bloque aparte, fuera del modal de confirmacion -->
+@if (creando()) {
+  <app-formulario-admin (creado)="alCrear()" (cancelado)="creando.set(false)" />
+}

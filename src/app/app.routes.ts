@@ -6,6 +6,7 @@ import { ListaSuperadmins } from './paginas/lista-superadmins/lista-superadmins'
 import { sesionGuard } from './guards/sesion-guard';
 import { rolGuard } from './guards/rol-guard';
 import { Bienvenida } from './paginas/bienvenida/bienvenida';
+import { ListaAdmins } from './paginas/lista-admins/lista-admins';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -27,10 +28,15 @@ export const routes: Routes = [
         //El guard de sesion ya se reviso en el marco; aqui solo se revisa el rol
         canActivate: [rolGuard],
         data: { roles: ['SUPERADMIN'] },
+      }, 
+      {
+        path: 'admins',
+        component: ListaAdmins,
+        canActivate: [rolGuard],
+        data: { roles: ['SUPERADMIN'] },
       },
     ],
   },
   //Cualquier direccion que no exista se manda al login
-  //(reemplaza la redireccion anterior
   { path: '**', redirectTo: 'login' },
 ];

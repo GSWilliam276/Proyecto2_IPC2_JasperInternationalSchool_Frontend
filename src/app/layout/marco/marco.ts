@@ -41,12 +41,15 @@ export class Marco {
       .join('');
   }
 
-  private opcionesPorRol(rol: string | undefined): OpcionMenu[] {
-    switch (rol) {
-      case 'SUPERADMIN':
-        return [{ ruta: '/superadmin', etiqueta: 'Administradores' }];
-      default:
-        return [];
+    private opcionesPorRol(rol: string | undefined): OpcionMenu[] {
+      switch (rol) {
+        case 'SUPERADMIN':
+          return [
+            { ruta: '/superadmin', etiqueta: 'SuperAdmins' },
+            { ruta: '/admins', etiqueta: 'Administradores' },
+          ];
+        default:
+          return [];
+      }
     }
   }
-}
