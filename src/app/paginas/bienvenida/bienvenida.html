@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-fondo text-texto flex flex-col">
+
+  <!-- Encabezado con el logo y el boton de ingreso -->
+  <header class="bg-primario-oscuro text-white">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="logo-claro.svg" alt="Logo de {{ colegio.nombre }}" class="h-10 w-auto" />
+        <span class="font-semibold">{{ colegio.nombre }}</span>
+      </div>
+      <a routerLink="/login"
+        class="rounded-lg bg-white text-primario-oscuro text-sm font-medium px-4 py-2 hover:bg-primario-claro transition-colors">
+        Iniciar sesión
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-1">
+
+    <!-- Portada -->
+    <section class="bg-primario-oscuro text-white">
+      <div class="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+        <div>
+        <h1 class="font-titulo text-4xl md:text-6xl font-semibold leading-tight">Bienvenidos</h1>
+          <p class="font-titulo text-xl md:text-2xl text-primario-claro mt-3">{{ colegio.lema }}</p>
+          <p class="mt-5 text-primario-claro max-w-md">{{ colegio.descripcion }}</p>
+          <a routerLink="/login"
+            class="inline-block mt-8 rounded-lg bg-acento text-white font-medium px-6 py-3 hover:opacity-90 transition-opacity">
+            Ingresar al sistema
+          </a>
+        </div>
+        <div class="flex flex-col items-center text-center">
+          <!-- el logo grande sobre un circulo, para que luzca sobre el verde oscuro -->
+          <div class="rounded-full bg-primario p-10 md:p-14">
+            <img src="logo-claro.svg" alt="" class="h-40 md:h-56 w-auto" />
+          </div>
+          <p class="font-titulo text-2xl md:text-3xl font-semibold mt-6">{{ colegio.nombre }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Niveles educativos -->
+    <section class="max-w-6xl mx-auto px-6 py-14">
+      <h2 class="text-2xl font-semibold">Niveles educativos</h2>
+      <p class="text-sm text-gray-500 mt-1">Acompañamos a cada estudiante en todas sus etapas.</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
+        @for (nivel of colegio.niveles; track nivel.nombre) {
+          <article class="bg-white rounded-xl shadow-sm border-t-4 border-primario p-5">
+            <h3 class="font-semibold text-primario-oscuro">{{ nivel.nombre }}</h3>
+            <p class="text-sm mt-2">{{ nivel.detalle }}</p>
+          </article>
+        }
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="bg-primario-claro">
+      <div class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
+        <div>
+          <h3 class="font-semibold text-primario-oscuro">Dirección</h3>
+          <p class="text-sm mt-2">{{ colegio.direccion }}</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-primario-oscuro">Contacto</h3>
+          <p class="text-sm mt-2">Tel. {{ colegio.telefono }}</p>
+          <p class="text-sm">{{ colegio.correo }}</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-primario-oscuro">Horario de atención</h3>
+          <p class="text-sm mt-2">{{ colegio.horario }}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-primario-oscuro text-primario-claro text-xs text-center py-4">
+    {{ colegio.nombre }} · {{ anio }}
+  </footer>
+</div>

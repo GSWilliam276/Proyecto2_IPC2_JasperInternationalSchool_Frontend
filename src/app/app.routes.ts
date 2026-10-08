@@ -2,10 +2,10 @@ import { Routes } from '@angular/router';
 import { Login } from './paginas/login/login';
 import { SinAcceso } from './paginas/sin-acceso/sin-acceso';
 import { Marco } from './layout/marco/marco'; //el marco con menu lateral, barra superior y pie
-import { ListaSuperadmins } from './paginas/lista-superadmins/lista-superadmins'; //NUEVO: la tabla pasa a ser una pantalla del marco
+import { ListaSuperadmins } from './paginas/lista-superadmins/lista-superadmins'; //la tabla pasa a ser una pantalla del marco
 import { sesionGuard } from './guards/sesion-guard';
 import { rolGuard } from './guards/rol-guard';
-
+import { Bienvenida } from './paginas/bienvenida/bienvenida';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -13,6 +13,7 @@ import { rolGuard } from './guards/rol-guard';
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'sin-acceso', component: SinAcceso },
+  { path: '', component: Bienvenida, pathMatch: 'full' },
   {
     //El marco envuelve todas las pantallas que requieren sesion
     //Se pone el guard de sesion una sola vez aqui, y cubre a todas las hijas

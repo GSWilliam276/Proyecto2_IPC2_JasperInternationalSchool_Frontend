@@ -2,6 +2,13 @@
 
 @import 'tailwindcss';
 
+/* Fuentes instaladas como paquetes: se ven igual sin internet */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/lora/600.css';
+@import '@fontsource/lora/700.css';
+
 @theme {
   --color-primario: #2F6F62;
   --color-primario-oscuro: #1F4A42;
@@ -9,4 +16,15 @@
   --color-fondo: #F3F7F6;
   --color-texto: #1B2B29;
   --color-acento: #B4573A;
+
+  /* --font-sans cambia la fuente de todo el sistema; --font-titulo crea la clase "font-titulo" */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: 'Lora', Georgia, serif;
+}
+
+/* Todos los titulos usan la serif, sin tener que ponerle la clase uno por uno */
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-titulo);
+  }
 }
