@@ -45,7 +45,7 @@ export class Marco {
       switch (rol) {
         case 'SUPERADMIN':
           return [
-            { ruta: '/superadmin', etiqueta: 'SuperAdmins' },
+            { ruta: '/superadmin', etiqueta: 'Super Administradores' },
             { ruta: '/admins', etiqueta: 'Administradores' },
           ];
         default:

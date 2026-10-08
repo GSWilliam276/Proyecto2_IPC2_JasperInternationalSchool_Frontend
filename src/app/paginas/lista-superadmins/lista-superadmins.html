@@ -1,15 +1,21 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Super Administradores</h2>
+  <p class="text-sm text-gray-500">Usuarios con acceso total al sistema</p>
+</div>
+
 <section class="bg-white rounded-xl shadow-md p-6">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-    <h3 class="text-lg font-semibold text-texto">SuperAdmins</h3>
-    <input type="search" placeholder="Buscar por nombre o correo"
-      (input)="alEscribir($any($event.target).value)"
-      class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex items-center gap-3">
+      <input type="search" placeholder="Buscar por nombre o correo"
+        (input)="alEscribir($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Nuevo SuperAdmin
+      </button>
+    </div>
   </div>
-
-  <button type="button" (click)="creando.set(true)"
-      class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
-      Nuevo SuperAdmin
-    </button>
 
   @if (error()) {
     <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
@@ -84,7 +90,7 @@
   </div>
 }
 
-<!-- Formulario de creacion: aparece cuando se toca "Nuevo SuperAdmin" -->
+<!-- Formulario de creacion: bloque aparte, fuera del modal de confirmacion -->
 @if (creando()) {
   <app-formulario-superadmin (creado)="alCrear()" (cancelado)="creando.set(false)" />
 }
