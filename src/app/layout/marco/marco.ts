@@ -10,7 +10,7 @@ interface OpcionMenu {
 
 /**
  * Marco comun de todas las pantallas con sesion: menu lateral, barra superior y pie
- * Lo unico que cambia entre pantallas es lo que va en <router-outlet />.
+ * Lo unico que cambia entre pantallas es lo que va en <router-outlet />
  */
 @Component({
   selector: 'app-marco',
@@ -32,7 +32,7 @@ export class Marco {
     this.router.navigate(['/login']);
   }
 
-  /** Iniciales para el avatar: "Super Admin" -> "SA". */
+  /** Iniciales para el avatar: "Super Admin" -> "SA" */
   protected get iniciales(): string {
     const partes = (this.sesion?.nombre ?? '').split(' ').filter((p) => p.length > 0);
     return partes
