@@ -1,16 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router'; //Sirve para navegar a otra pantalla
 import { Autenticacion } from '../../servicios/autenticacion';
+import { Router, RouterLink } from '@angular/router';
 
 /**
  * Pantalla de inicio de sesion (CU001).
  * Un componente es una pantalla: esta clase tiene la logica y login.html
- * tiene lo que se ve.
+ * tiene lo que se ve
  */
 @Component({
   selector: 'app-login', //Nombre de la etiqueta HTML de este componente
-  imports: [ReactiveFormsModule], //Necesario para usar el formulario en la plantilla
+  imports: [ReactiveFormsModule, RouterLink], //Necesario para usar el formulario en la plantilla
   templateUrl: './login.html', //El HTML que muestra este componente
 })
 export class Login {

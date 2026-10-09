@@ -1,42 +1,36 @@
-<!--
-  Pantalla de inicio de sesion (CU001).
-  Las clases como "bg-primario" o "rounded-lg" son de Tailwind: cada una
-  hace una sola cosa (color de fondo, bordes redondeados, etc.)
-  Los colores "primario", "fondo" y "acento" estan definidos en styles.css.
--->
-<main class="min-h-screen bg-fondo flex items-center justify-center p-4">
-  <section class="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">
+<main class="relative min-h-screen bg-fondo flex items-center justify-center p-4 overflow-hidden">
 
-    <!-- Encabezado de la tarjeta -->
+  <!-- Marca arriba a la derecha: logo y nombre -->
+  <div class="absolute top-4 right-4 md:top-6 md:right-8 flex items-center gap-3">
+    <p class="hidden sm:block font-titulo text-lg font-bold text-primario-oscuro">Jasper International School</p>
+    <img src="logo.svg" alt="Logo de Jasper International School" class="h-12 md:h-14 w-auto" />
+  </div>
+
+  <!-- Fondo decorativo: el logo grande y muy tenue, cortado por el borde -->
+  <img src="logo.svg" alt="" aria-hidden="true"
+    class="absolute -left-10 -bottom-10 h-[28rem] w-auto opacity-15 pointer-events-none select-none" />
+
+  <!-- Frase decorativa a la derecha: tenue, y solo en pantallas anchas para no tapar la tarjeta -->
+  <p class="hidden xl:block absolute left-[calc(50%+17rem)] top-1/2 -translate-y-1/2 max-w-xs text-left font-titulo text-3xl font-bold leading-tight text-primario/35 pointer-events-none select-none">
+    Nos complace recibirle en nuestro entorno virtual
+  </p>
+
+  <section class="relative w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">
     <header class="bg-primario-oscuro text-white px-8 py-6">
       <h1 class="text-2xl font-semibold">Jasper International School</h1>
       <p class="text-primario-claro text-sm mt-1">Inicio de sesión</p>
     </header>
 
-    <!--
-      [formGroup] conecta este formulario con el que se definio en login.ts.
-      (ngSubmit) dice que metodo ejecutar al enviarlo: iniciarSesion().
-      novalidate apaga la validacion nativa del navegador, para que se vean
-      nuestros propios mensajes en lugar de los del navegador.
-    -->
     <form [formGroup]="formulario" (ngSubmit)="iniciarSesion()" class="px-8 py-6 space-y-4" novalidate>
-
-      <!-- Campo del correo -->
       <div>
         <label for="correo" class="block text-sm font-medium text-texto mb-1">Correo</label>
-        <!-- formControlName enlaza este input con el campo "correo" del formulario -->
         <input id="correo" type="email" formControlName="correo" autocomplete="username"
           class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
-        <!--
-          @if muestra el aviso solo si el usuario ya toco el campo (touched)
-          y no cumple las reglas (invalid). Asi no aparece apenas se abre la pantalla.
-        -->
         @if (formulario.controls.correo.touched && formulario.controls.correo.invalid) {
           <p class="text-sm text-acento mt-1">Ingrese un correo válido</p>
         }
       </div>
 
-      <!-- Campo de la contrasena -->
       <div>
         <label for="contrasena" class="block text-sm font-medium text-texto mb-1">Contraseña</label>
         <input id="contrasena" type="password" formControlName="contrasena" autocomplete="current-password"
@@ -46,23 +40,19 @@
         }
       </div>
 
-      <!--
-        signal error()
-        Si tiene texto, se muestra el mensaje que mando el backend.
-      -->
       @if (error()) {
         <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
       }
 
-      <!--
-        [disabled] desactiva el boton mientras se espera al backend,
-        para que no se pueda enviar dos veces seguidas.
-        El texto cambia segun el valor de cargando().
-      -->
       <button type="submit" [disabled]="cargando()"
         class="w-full bg-primario text-white font-medium rounded-lg py-2 hover:bg-primario-oscuro disabled:opacity-60 transition-colors">
         {{ cargando() ? 'Ingresando...' : 'Ingresar' }}
       </button>
     </form>
+    <div class="px-8 pb-6 text-center">
+      <a routerLink="/" class="text-sm text-primario hover:underline">
+        <i class="bi bi-arrow-left"></i> Volver a la pantalla principal
+      </a>
+    </div>
   </section>
 </main>

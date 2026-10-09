@@ -3,20 +3,20 @@
   <!-- Menu lateral -->
   <aside class="w-60 bg-primario-oscuro text-white flex flex-col">
     <div class="flex items-center gap-3 px-5 py-5 border-b border-white/10">
-      <img src="logo-claro.svg" alt="Logo de Jasper International School" class="h-10 w-auto" />
+      <img src="logo-claro.svg" alt="Logo de Jasper International School" class="h-12 w-auto" />
       <span class="text-sm font-semibold leading-tight">Jasper International School</span>
     </div>
 
     <nav class="flex-1 px-3 py-4 space-y-1">
-        <a routerLink="/inicio" routerLinkActive="bg-primario text-white"
-        class="block rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
-        Inicio
+      <a routerLink="/inicio" routerLinkActive="bg-primario text-white"
+        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
+        <i class="bi bi-house-door text-base"></i> Inicio
       </a>
       @for (opcion of menu; track opcion.ruta) {
-        <!-- routerLinkActive agrega la clase "activo" al enlace de la pantalla en la que se esta -->
+        <!-- routerLinkActive marca el enlace de la pantalla en la que se esta -->
         <a [routerLink]="opcion.ruta" routerLinkActive="bg-primario text-white"
-          class="block rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
-          {{ opcion.etiqueta }}
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
+          <i [class]="'bi bi-' + opcion.icono + ' text-base'"></i> {{ opcion.etiqueta }}
         </a>
       }
     </nav>
@@ -25,21 +25,28 @@
   <!-- Zona derecha: barra superior, contenido y pie -->
   <div class="flex-1 flex flex-col min-w-0">
 
-    <header class="bg-white shadow-sm px-6 py-3 flex items-center justify-end gap-4">
-      <div class="text-right">
-        <p class="text-sm font-medium text-texto">{{ sesion?.nombre }}</p>
-        <span class="inline-block text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">
-          {{ sesion?.rol }}
-        </span>
+    <header class="bg-white shadow-sm border-b-2 border-primario px-6 py-3 flex items-center justify-between gap-4">
+      <div>
+        <p class="font-titulo text-lg font-bold text-primario-oscuro leading-tight">Jasper International School</p>
+        <p class="text-xs text-gray-500">Sistema de gestión escolar</p>
       </div>
-      <!-- avatar con iniciales -->
-      <div class="h-9 w-9 rounded-full bg-primario text-white flex items-center justify-center text-sm font-semibold">
-        {{ iniciales }}
+
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-sm font-semibold text-texto">{{ sesion?.nombre }}</p>
+          <span class="inline-block text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">
+            {{ sesion?.rol }}
+          </span>
+        </div>
+        <!-- avatar con iniciales -->
+        <div class="h-10 w-10 rounded-full bg-primario text-white flex items-center justify-center text-sm font-bold ring-2 ring-primario-claro">
+          {{ iniciales }}
+        </div>
+        <button type="button" (click)="cerrarSesion()"
+          class="flex items-center gap-2 rounded-lg bg-primario-oscuro text-white text-sm px-3 py-2 hover:bg-acento transition-colors">
+          <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+        </button>
       </div>
-      <button type="button" (click)="cerrarSesion()"
-        class="text-sm rounded-lg border border-gray-300 px-3 py-1 text-texto hover:bg-gray-50">
-        Cerrar sesión
-      </button>
     </header>
 
     <!-- Aqui Angular muestra la pantalla que corresponde a la ruta actual -->

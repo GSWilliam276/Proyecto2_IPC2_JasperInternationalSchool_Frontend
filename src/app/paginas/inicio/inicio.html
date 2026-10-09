@@ -1,19 +1,28 @@
-<!-- Banner de bienvenida con degradado verde -->
-<section class="rounded-xl text-white p-6 md:p-8 shadow-md"
+<!-- Banner con el logo grande, opaco y cortado por el borde derecho -->
+<section class="relative overflow-hidden rounded-xl text-white p-6 md:p-8 shadow-md min-h-[14rem]"
   style="background-image: linear-gradient(135deg, #1F4A42, #2F6F62)">
-  <p class="text-sm text-primario-claro first-letter:uppercase">{{ fecha }}</p>
-  <h2 class="text-3xl md:text-4xl font-bold mt-1">{{ saludo }}, {{ sesion?.nombre?.split(' ')?.[0] }}</h2>
-  <p class="text-primario-claro mt-2">¿Qué desea gestionar hoy?</p>
+  <img src="logo-claro.svg" alt="" aria-hidden="true"
+    class="absolute -right-10 -bottom-10 h-64 md:h-80 w-auto opacity-15 pointer-events-none select-none" />
+  <div class="relative">
+    <p class="text-sm text-primario-claro first-letter:uppercase">{{ fecha }}</p>
+    <h2 class="text-3xl md:text-4xl font-bold mt-1">{{ saludo }}, {{ sesion?.nombre?.split(' ')?.[0] }}</h2>
+    <p class="text-primario-claro mt-2">¿Qué desea gestionar hoy?</p>
+  </div>
 </section>
 
-<!-- Una tarjeta por modulo -->
+<!-- Una tarjeta por modulo: ícono grande y opaco, y franja verde abajo -->
 <section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
   @for (o of opciones; track o.ruta) {
     <a [routerLink]="o.ruta"
-      class="group bg-white rounded-xl shadow-sm border-t-4 border-primario p-5 hover:shadow-md hover:-translate-y-0.5 transition">
-      <h3 class="text-lg font-semibold text-primario-oscuro">{{ o.etiqueta }}</h3>
-      <p class="text-sm text-gray-600 mt-2">{{ o.descripcion }}</p>
-      <span class="inline-block mt-4 text-sm font-medium text-primario group-hover:underline">Abrir →</span>
+      class="group relative overflow-hidden bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition flex flex-col">
+      <div class="relative flex-1 p-6 min-h-28">
+        <span class="absolute -right-3 -bottom-5 text-8xl text-primario/15 group-hover:text-primario/25 transition-colors" aria-hidden="true">
+          <i [class]="'bi bi-' + o.icono"></i>
+        </span>
+        <h3 class="relative text-lg font-semibold text-primario-oscuro">{{ o.etiqueta }}</h3>
+        <span class="relative inline-block mt-3 text-sm font-medium text-primario group-hover:underline">Abrir →</span>
+      </div>
+      <div class="h-2 bg-primario group-hover:bg-primario-oscuro transition-colors"></div>
     </a>
   }
 </section>
