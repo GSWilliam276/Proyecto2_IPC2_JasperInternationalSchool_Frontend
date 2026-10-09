@@ -9,6 +9,7 @@ import { Bienvenida } from './paginas/bienvenida/bienvenida';
 import { ListaAdmins } from './paginas/lista-admins/lista-admins';
 import { ListaAniosLectivos } from './paginas/lista-anios-lectivos/lista-anios-lectivos';
 import { ListaGrados } from './paginas/lista-grados/lista-grados';
+import { ListaCarreras } from './paginas/lista-carreras/lista-carreras';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -46,6 +47,12 @@ export const routes: Routes = [
       {
         path: 'grados',
         component: ListaGrados,
+        canActivate: [rolGuard],
+        data: { roles: ['SUPERADMIN'] },
+      },
+      {
+        path: 'carreras',
+        component: ListaCarreras,
         canActivate: [rolGuard],
         data: { roles: ['SUPERADMIN'] },
       },

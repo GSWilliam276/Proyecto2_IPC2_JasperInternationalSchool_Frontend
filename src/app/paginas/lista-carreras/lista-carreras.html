@@ -1,0 +1,109 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Carreras</h2>
+  <p class="text-sm text-gray-500">Carreras del nivel diversificado que ofrece el colegio.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex items-center gap-3">
+      <input type="search" placeholder="Buscar por nombre"
+        (input)="alEscribir($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Nueva carrera
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Nombre</th>
+          <th class="px-3 py-2">Estado</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of carreras(); track c.idCarrera) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">{{ c.nombre }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-primario-claro]="c.estado === 'ACTIVO'"
+                [class.text-primario-oscuro]="c.estado === 'ACTIVO'"
+                [class.bg-gray-200]="c.estado !== 'ACTIVO'"
+                [class.text-gray-600]="c.estado !== 'ACTIVO'">
+                {{ c.estado === 'ACTIVO' ? 'Activa' : 'Inactiva' }}
+              </span>
+            </td>
+            <td class="px-3 py-2">
+              <div class="flex gap-2">
+                <button type="button" (click)="editando.set(c)"
+                  class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                  Editar
+                </button>
+                <button type="button" (click)="pedirConfirmacion(c)"
+                  class="text-xs rounded-lg px-3 py-1 text-white"
+                  [class.bg-acento]="c.estado === 'ACTIVO'"
+                  [class.bg-primario]="c.estado !== 'ACTIVO'">
+                  {{ c.estado === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron resultados' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+<!-- Confirmacion de activar o desactivar -->
+@if (pendiente(); as c) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Confirmar acción</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Desea {{ c.estado === 'ACTIVO' ? 'desactivar' : 'activar' }} la carrera <strong>{{ c.nombre }}</strong>?
+      </p>
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="cancelarConfirmacion()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmar()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+          {{ procesando() ? 'Procesando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Formulario para crear -->
+@if (creando()) {
+  <app-formulario-carrera (guardado)="alGuardar()" (cancelado)="creando.set(false)" />
+}
+
+<!-- Formulario para editar: recibe la carrera que se esta editando -->
+@if (editando(); as c) {
+  <app-formulario-carrera [carrera]="c" (guardado)="alGuardar()" (cancelado)="editando.set(null)" />
+}
