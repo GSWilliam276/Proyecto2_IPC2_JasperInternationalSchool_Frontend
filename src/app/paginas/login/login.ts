@@ -70,7 +70,7 @@ export class Login {
   private rutaPorRol(rol: string): string {
     switch (rol) {
       case 'SUPERADMIN':
-        return '/superadmin';
+        return '/inicio';
       default:
         return '/sin-acceso'; //los demas paneles todavia no existen por el momento
     }

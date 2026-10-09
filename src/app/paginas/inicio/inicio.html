@@ -1,0 +1,19 @@
+<!-- Banner de bienvenida con degradado verde -->
+<section class="rounded-xl text-white p-6 md:p-8 shadow-md"
+  style="background-image: linear-gradient(135deg, #1F4A42, #2F6F62)">
+  <p class="text-sm text-primario-claro first-letter:uppercase">{{ fecha }}</p>
+  <h2 class="text-3xl md:text-4xl font-bold mt-1">{{ saludo }}, {{ sesion?.nombre?.split(' ')?.[0] }}</h2>
+  <p class="text-primario-claro mt-2">¿Qué desea gestionar hoy?</p>
+</section>
+
+<!-- Una tarjeta por modulo -->
+<section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+  @for (o of opciones; track o.ruta) {
+    <a [routerLink]="o.ruta"
+      class="group bg-white rounded-xl shadow-sm border-t-4 border-primario p-5 hover:shadow-md hover:-translate-y-0.5 transition">
+      <h3 class="text-lg font-semibold text-primario-oscuro">{{ o.etiqueta }}</h3>
+      <p class="text-sm text-gray-600 mt-2">{{ o.descripcion }}</p>
+      <span class="inline-block mt-4 text-sm font-medium text-primario group-hover:underline">Abrir →</span>
+    </a>
+  }
+</section>

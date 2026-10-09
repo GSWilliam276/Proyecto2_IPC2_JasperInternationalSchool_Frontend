@@ -8,6 +8,10 @@
     </div>
 
     <nav class="flex-1 px-3 py-4 space-y-1">
+        <a routerLink="/inicio" routerLinkActive="bg-primario text-white"
+        class="block rounded-lg px-3 py-2 text-sm text-primario-claro hover:bg-primario hover:text-white transition-colors">
+        Inicio
+      </a>
       @for (opcion of menu; track opcion.ruta) {
         <!-- routerLinkActive agrega la clase "activo" al enlace de la pantalla en la que se esta -->
         <a [routerLink]="opcion.ruta" routerLinkActive="bg-primario text-white"

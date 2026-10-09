@@ -20,20 +20,25 @@
     <section class="bg-primario-oscuro text-white">
       <div class="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
-        <h1 class="font-titulo text-4xl md:text-6xl font-semibold leading-tight">Bienvenidos</h1>
-          <p class="font-titulo text-xl md:text-2xl text-primario-claro mt-3">{{ colegio.lema }}</p>
+          <p class="text-primario-claro text-sm uppercase tracking-widest">Quetzaltenango, Guatemala</p>
+          <h1 class="text-3xl md:text-5xl font-bold mt-4 leading-tight">
+            Le damos la bienvenida, con los brazos abiertos al conocimiento
+          </h1>
           <p class="mt-5 text-primario-claro max-w-md">{{ colegio.descripcion }}</p>
           <a routerLink="/login"
-            class="inline-block mt-8 rounded-lg bg-acento text-white font-medium px-6 py-3 hover:opacity-90 transition-opacity">
-            Ingresar al sistema
-          </a>
+          class="inline-block mt-8 rounded-lg bg-acento text-white font-semibold px-6 py-3 hover:opacity-90 transition-opacity">
+          Ingresar al sistema
+        </a>
         </div>
-        <div class="flex flex-col items-center text-center">
-          <!-- el logo grande sobre un circulo, para que luzca sobre el verde oscuro -->
-          <div class="rounded-full bg-primario p-10 md:p-14">
-            <img src="logo-claro.svg" alt="" class="h-40 md:h-56 w-auto" />
+
+        <div class="flex justify-center">
+          <!-- rectangulo blanco: aqui se usa el logo original, de colores oscuros -->
+          <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 flex items-center gap-5">
+            <img src="logo.svg" alt="" class="h-28 md:h-40 w-auto" />
+            <p class="font-titulo text-3xl md:text-4xl font-bold text-primario-oscuro leading-tight max-w-[16rem]">
+              {{ colegio.nombre }}
+            </p>
           </div>
-          <p class="font-titulo text-2xl md:text-3xl font-semibold mt-6">{{ colegio.nombre }}</p>
         </div>
       </div>
     </section>

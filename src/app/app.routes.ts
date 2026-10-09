@@ -10,6 +10,7 @@ import { ListaAdmins } from './paginas/lista-admins/lista-admins';
 import { ListaAniosLectivos } from './paginas/lista-anios-lectivos/lista-anios-lectivos';
 import { ListaGrados } from './paginas/lista-grados/lista-grados';
 import { ListaCarreras } from './paginas/lista-carreras/lista-carreras';
+import { Inicio } from './paginas/inicio/inicio';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -25,6 +26,7 @@ export const routes: Routes = [
     component: Marco,
     canActivate: [sesionGuard],
     children: [
+      { path: 'inicio', component: Inicio },
       {
         path: 'superadmin',
         component: ListaSuperadmins,
