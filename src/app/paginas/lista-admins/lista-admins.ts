@@ -30,6 +30,7 @@ export class ListaAdmins implements OnInit {
 
   private busqueda = '';
   private temporizador: ReturnType<typeof setTimeout> | undefined;
+  protected readonly editando = signal<UsuarioResumen | null>(null);
 
   ngOnInit(): void {
     this.cargar();
@@ -112,11 +113,14 @@ export class ListaAdmins implements OnInit {
   }
 
   //crear
-
-  /** La persona termino de crear: se cierra el formulario y se recarga desde la primera pagina */
-  protected alCrear(): void {
+  /** El formulario guardo (creando o editando): se cierra y se recarga */
+  protected alGuardar(): void {
+    const eraCreacion = this.creando();
     this.creando.set(false);
-    this.pagina.set(1);
+    this.editando.set(null);
+    if (eraCreacion) {
+      this.pagina.set(1);
+    }
     this.cargar();
   }
 }

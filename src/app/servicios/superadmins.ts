@@ -24,6 +24,13 @@ export interface SolicitudCrearUsuario {
   contrasena: string;
 }
 
+/** Datos editables de un usuario (coincide con SolicitudEditarUsuario del backend) */
+export interface SolicitudEditarUsuario {
+  nombre: string;
+  telefono: string;
+  direccion: string;
+}
+
 /** Consultas de SuperAdmin al backend (parte de CU010). */
 @Injectable({ providedIn: 'root' })
 export class Superadmins {

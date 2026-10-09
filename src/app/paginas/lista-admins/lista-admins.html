@@ -42,12 +42,18 @@
             <td class="px-3 py-2">{{ u.cui }}</td>
             <td class="px-3 py-2">{{ u.estado }}</td>
             <td class="px-3 py-2">
-              <button type="button" (click)="pedirConfirmacion(u)"
-                class="text-xs rounded-lg px-3 py-1 text-white"
-                [class.bg-acento]="u.estado === 'ACTIVO'"
-                [class.bg-primario]="u.estado !== 'ACTIVO'">
-                {{ u.estado === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
-              </button>
+              <div class="flex gap-2">
+                <button type="button" (click)="editando.set(u)"
+                  class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                  Editar
+                </button>
+                <button type="button" (click)="pedirConfirmacion(u)"
+                  class="text-xs rounded-lg px-3 py-1 text-white"
+                  [class.bg-acento]="u.estado === 'ACTIVO'"
+                  [class.bg-primario]="u.estado !== 'ACTIVO'">
+                  {{ u.estado === 'ACTIVO' ? 'Desactivar' : 'Activar' }}
+                </button>
+              </div>
             </td>
           </tr>
         } @empty {
@@ -90,7 +96,12 @@
   </div>
 }
 
-<!-- Formulario de creacion: bloque aparte, fuera del modal de confirmacion -->
+<!-- Formulario para crear -->
 @if (creando()) {
-  <app-formulario-admin (creado)="alCrear()" (cancelado)="creando.set(false)" />
+  <app-formulario-admin (guardado)="alGuardar()" (cancelado)="creando.set(false)" />
+}
+
+<!-- Formulario para editar: recibe el admin que se esta editando -->
+@if (editando(); as u) {
+  <app-formulario-admin [admin]="u" (guardado)="alGuardar()" (cancelado)="editando.set(null)" />
 }

@@ -1,20 +1,25 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Admins } from '../../servicios/admins';
+import { UsuarioResumen } from '../../servicios/superadmins';
+import { Observable } from 'rxjs';
 
-/** Formulario (en modal) para crear un Admin (CU005) */
+/** Formulario (en modal) para crear o editar un Admin (CU005 y CU007). */
 @Component({
   selector: 'app-formulario-admin',
   imports: [ReactiveFormsModule],
   templateUrl: './formulario-admin.html',
 })
-export class FormularioAdmin {
+export class FormularioAdmin implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly servicio = inject(Admins);
 
-  readonly creado = output<void>();
+  // si llega un admin, el formulario edita; si no llega, crea
+  readonly admin = input<UsuarioResumen | null>(null);
+  readonly guardado = output<void>();
   readonly cancelado = output<void>();
 
+  protected readonly esEdicion = computed(() => this.admin() !== null);
   protected readonly guardando = signal(false);
   protected readonly error = signal('');
 
@@ -27,6 +32,11 @@ export class FormularioAdmin {
     { nombre: 'contrasena', etiqueta: 'Contraseña provisional', tipo: 'password', aviso: 'Entre 8 y 64 caracteres' },
   ];
 
+  // al editar no se muestra la contraseña: tiene su propio caso de uso
+  protected readonly camposVisibles = computed(() =>
+    this.esEdicion() ? this.campos.filter((c) => c.nombre !== 'contrasena') : this.campos,
+  );
+
   protected readonly formulario = this.fb.nonNullable.group({
     cui: ['', [Validators.required, Validators.pattern(/^\d{13}$/)]],
     nombre: ['', [Validators.required, Validators.maxLength(100)]],
@@ -36,7 +46,19 @@ export class FormularioAdmin {
     contrasena: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
   });
 
-  protected guardar(): void {
+  /** Al editar: se rellenan los datos y se bloquean los campos que no cambian. */
+  ngOnInit(): void {
+    const actual = this.admin();
+    if (actual) {
+      this.formulario.patchValue(actual);
+      // un control deshabilitado no cuenta en la validacion del formulario
+      this.formulario.controls.cui.disable();
+      this.formulario.controls.correo.disable();
+      this.formulario.controls.contrasena.disable();
+    }
+  }
+
+    protected guardar(): void {
     if (this.formulario.invalid) {
       this.formulario.markAllAsTouched();
       return;
@@ -44,14 +66,26 @@ export class FormularioAdmin {
     this.guardando.set(true);
     this.error.set('');
 
-    this.servicio.crear(this.formulario.getRawValue()).subscribe({
+    const datos = this.formulario.getRawValue();
+    const actual = this.admin();
+    //crear devuelve el admin y editar no devuelve nada,
+    //y aqui solo importa si la peticion salio bien o mal
+    const peticion: Observable<unknown> = actual
+      ? this.servicio.editar(actual.idUsuario, {
+          nombre: datos.nombre,
+          telefono: datos.telefono,
+          direccion: datos.direccion,
+        })
+      : this.servicio.crear(datos);
+
+    peticion.subscribe({
       next: () => {
         this.guardando.set(false);
-        this.creado.emit();
+        this.guardado.emit();
       },
       error: (e) => {
         this.guardando.set(false);
-        this.error.set(e.error?.mensaje ?? 'No se pudo crear el administrador');
+        this.error.set(e.error?.mensaje ?? 'No se pudo guardar el administrador');
       },
     });
   }

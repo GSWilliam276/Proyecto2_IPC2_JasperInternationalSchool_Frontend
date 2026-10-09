@@ -1,17 +1,24 @@
 <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
   <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
     class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3">
-    <h4 class="text-lg font-semibold text-texto">Nuevo Administrador</h4>
+    <h4 class="text-lg font-semibold text-texto">
+      {{ esEdicion() ? 'Editar administrador' : 'Nuevo Administrador' }}
+    </h4>
 
-    @for (c of campos; track c.nombre) {
+    <!-- camposVisibles() oculta la contraseña cuando se esta editando -->
+    @for (c of camposVisibles(); track c.nombre) {
       <div>
         <label [for]="c.nombre" class="block text-sm font-medium text-texto mb-1">{{ c.etiqueta }}</label>
         <input [id]="c.nombre" [type]="c.tipo" [formControlName]="c.nombre"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" />
         @if (formulario.get(c.nombre)?.touched && formulario.get(c.nombre)?.invalid) {
           <p class="text-sm text-acento mt-1">{{ c.aviso }}</p>
         }
       </div>
+    }
+
+    @if (esEdicion()) {
+      <p class="text-xs text-gray-500">El CUI y el correo no se pueden modificar. La contraseña se cambia desde su propia opción.</p>
     }
 
     @if (error()) {
