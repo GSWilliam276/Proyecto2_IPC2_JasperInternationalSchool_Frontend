@@ -57,4 +57,8 @@ export class Superadmins {
   desactivar(id: number): Observable<void> {
     return this.http.put<void>(`${URL_API}/superadmins/${id}/desactivar`, null);
   }
+
+  editar(id: number, datos: SolicitudEditarUsuario): Observable<void> {
+    return this.http.put<void>(`${URL_API}/superadmins/${id}`, datos);
+  }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Superadmins, UsuarioResumen } from '../../servicios/superadmins';
 import { FormularioSuperadmin } from '../formulario-superadmin/formulario-superadmin';
 
-/** Listado paginado de SuperAdmins, con busqueda y activar/desactivar */
+/** Listado paginado de SuperAdmins: busqueda, crear, editar, activar y desactivar */
 @Component({
   selector: 'app-lista-superadmins',
   imports: [FormularioSuperadmin],
@@ -17,11 +17,12 @@ export class ListaSuperadmins implements OnInit {
   protected readonly cargando = signal(false);
   protected readonly error = signal('');
 
-  //Fila sobre la que se pidio confirmacion; null = el modal esta cerrado
+  //confirmacion de activar/desactivar, y los dos usos del formulario
   protected readonly pendiente = signal<UsuarioResumen | null>(null);
   protected readonly procesando = signal(false);
+  protected readonly creando = signal(false);
+  protected readonly editando = signal<UsuarioResumen | null>(null);
 
-  //El backend no manda el total: si llegaron menos filas que el tamano, no hay mas paginas
   protected readonly hayMas = computed(() => this.usuarios().length === this.tamano);
 
   private busqueda = '';
@@ -46,7 +47,7 @@ export class ListaSuperadmins implements OnInit {
     });
   }
 
-  /** Espera 350 ms despues de la ultima tecla antes de consultar (debounce) */
+  /** El debounce espera 350 ms despues de la ultima tecla antes de consultar */
   protected alEscribir(texto: string): void {
     clearTimeout(this.temporizador);
     this.temporizador = setTimeout(() => {
@@ -70,14 +71,14 @@ export class ListaSuperadmins implements OnInit {
     }
   }
 
-  //activar / desactivar con confirmacion 
+  //Activar / desactivar con confirmacion 
 
   protected pedirConfirmacion(usuario: UsuarioResumen): void {
-    this.pendiente.set(usuario); //abre el modal
+    this.pendiente.set(usuario);
   }
 
   protected cancelar(): void {
-    this.pendiente.set(null); //cierra el modal sin hacer nada
+    this.pendiente.set(null);
   }
 
   protected confirmar(): void {
@@ -87,7 +88,6 @@ export class ListaSuperadmins implements OnInit {
     }
     this.procesando.set(true);
 
-    //segun el estado actual, la accion es una u otra
     const peticion =
       usuario.estado === 'ACTIVO'
         ? this.servicio.desactivar(usuario.idUsuario)
@@ -97,23 +97,27 @@ export class ListaSuperadmins implements OnInit {
       next: () => {
         this.procesando.set(false);
         this.pendiente.set(null);
-        this.cargar(); //Recarga para ver el estado nuevo
+        this.cargar();
       },
       error: (e) => {
         this.procesando.set(false);
         this.pendiente.set(null);
-        //aqui aparece, por ejemplo, el mensaje de "unico SuperAdmin activo"
+        // aqui aparece, por ejemplo, "unico SuperAdmin activo"
         this.error.set(e.error?.mensaje ?? 'No se pudo completar la acción');
       },
     });
   }
 
-  protected readonly creando = signal(false); //true = el formulario esta abierto
+  //Crear y editar
 
-  /** La persona termino de crear: se cierra el formulario y se recarga desde la primera pagina */
-  protected alCrear(): void {
+  /** El formulario guardo (creando o editando): se cierra y se recarga */
+  protected alGuardar(): void {
+    const eraCreacion = this.creando();
     this.creando.set(false);
-    this.pagina.set(1);
+    this.editando.set(null);
+    if (eraCreacion) {
+      this.pagina.set(1);
+    }
     this.cargar();
   }
 }
