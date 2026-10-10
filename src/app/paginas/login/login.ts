@@ -25,6 +25,9 @@ export class Login {
   protected readonly error = signal(''); //mensaje de error para mostrar
   //se elimino "bienvenida", era temporal y ahora se redirige al panel
 
+  //Muestra u oculta la contraseña
+  protected readonly verContrasena = signal(false);
+
   //El formulario con sus validaciones. Cada campo empieza vacio
   //y lleva una lista de reglas que debe cumplir.
   protected readonly formulario = this.fb.nonNullable.group({

@@ -1,0 +1,68 @@
+<div class="max-w-4xl mx-auto">
+  <div class="mb-4">
+    <h2 class="text-xl font-semibold text-texto">Cambiar contraseña</h2>
+    <p class="text-sm text-gray-500">Para su seguridad, ingrese la contraseña actual y elija una nueva.</p>
+  </div>
+
+  <div class="grid md:grid-cols-5 gap-6">
+
+    <section class="md:col-span-3 bg-white rounded-xl shadow-md p-6">
+      <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate class="space-y-4">
+
+        @for (c of campos; track c.nombre) {
+          <div>
+            <label [for]="c.nombre" class="block text-sm font-medium text-texto mb-1">{{ c.etiqueta }}</label>
+            <!-- el contenedor "relative" permite poner el ojito encima del campo, a la derecha -->
+            <div class="relative">
+              <input [id]="c.nombre" [type]="esVisible(c.nombre) ? 'text' : 'password'" [formControlName]="c.nombre" autocomplete="off"
+                class="w-full rounded-lg border border-gray-300 pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+              <button type="button" (click)="alternarVisibilidad(c.nombre)"
+                [attr.aria-label]="esVisible(c.nombre) ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-primario">
+                <i [class]="esVisible(c.nombre) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+            @if (formulario.get(c.nombre)?.touched && formulario.get(c.nombre)?.invalid) {
+              <p class="text-sm text-acento mt-1">{{ c.aviso }}</p>
+            }
+          </div>
+        }
+
+        <!-- avisos que dependen de comparar dos campos -->
+        @if (formulario.hasError('noCoinciden') && formulario.controls.confirmar.touched) {
+          <p class="text-sm text-acento">La confirmación no coincide con la contraseña nueva</p>
+        }
+        @if (formulario.hasError('igualAActual') && formulario.controls.contrasenaNueva.touched) {
+          <p class="text-sm text-acento">La contraseña nueva debe ser distinta de la actual</p>
+        }
+
+        @if (error()) {
+          <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+        }
+        @if (exito()) {
+          <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2">
+            <i class="bi bi-check-circle"></i> Su contraseña se actualizó correctamente.
+          </p>
+        }
+
+        <button type="submit" [disabled]="guardando()"
+          class="w-full bg-primario text-white font-medium rounded-lg py-2 hover:bg-primario-oscuro disabled:opacity-60 transition-colors">
+          {{ guardando() ? 'Guardando...' : 'Cambiar contraseña' }}
+        </button>
+      </form>
+    </section>
+
+    <!-- panel lateral con recomendaciones -->
+    <aside class="relative overflow-hidden md:col-span-2 rounded-xl text-white p-6 shadow-md"
+      style="background-image: linear-gradient(135deg, #1F4A42, #2F6F62)">
+      <i class="bi bi-shield-lock absolute -right-4 -bottom-6 text-9xl opacity-15 pointer-events-none"></i>
+      <h3 class="relative text-lg font-semibold">Una contraseña segura</h3>
+      <ul class="relative mt-4 space-y-3 text-sm text-primario-claro">
+        <li class="flex gap-2"><i class="bi bi-check2-circle"></i> Use al menos 8 caracteres.</li>
+        <li class="flex gap-2"><i class="bi bi-check2-circle"></i> Combine letras, números y símbolos.</li>
+        <li class="flex gap-2"><i class="bi bi-check2-circle"></i> No la comparta con nadie.</li>
+        <li class="flex gap-2"><i class="bi bi-check2-circle"></i> No reutilice la de otras cuentas.</li>
+      </ul>
+    </aside>
+  </div>
+</div>

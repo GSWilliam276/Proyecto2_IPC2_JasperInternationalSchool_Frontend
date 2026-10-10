@@ -33,8 +33,15 @@
 
       <div>
         <label for="contrasena" class="block text-sm font-medium text-texto mb-1">Contraseña</label>
-        <input id="contrasena" type="password" formControlName="contrasena" autocomplete="current-password"
-          class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+        <div class="relative">
+          <input id="contrasena" [type]="verContrasena() ? 'text' : 'password'" formControlName="contrasena" autocomplete="current-password"
+            class="w-full rounded-lg border border-gray-300 pl-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+          <button type="button" (click)="verContrasena.set(!verContrasena())"
+            [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-primario">
+            <i [class]="verContrasena() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
         @if (formulario.controls.contrasena.touched && formulario.controls.contrasena.invalid) {
           <p class="text-sm text-acento mt-1">La contraseña es obligatoria</p>
         }

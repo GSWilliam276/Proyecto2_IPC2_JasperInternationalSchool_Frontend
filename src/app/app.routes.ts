@@ -11,6 +11,7 @@ import { ListaAniosLectivos } from './paginas/lista-anios-lectivos/lista-anios-l
 import { ListaGrados } from './paginas/lista-grados/lista-grados';
 import { ListaCarreras } from './paginas/lista-carreras/lista-carreras';
 import { Inicio } from './paginas/inicio/inicio';
+import { CambiarContrasena } from './paginas/cambiar-contrasena/cambiar-contrasena';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -58,6 +59,7 @@ export const routes: Routes = [
         canActivate: [rolGuard],
         data: { roles: ['SUPERADMIN'] },
       },
+      { path: 'cambiar-contrasena', component: CambiarContrasena },
     ],
   },
   //Cualquier direccion que no exista se manda al login

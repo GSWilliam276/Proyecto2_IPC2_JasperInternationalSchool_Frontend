@@ -31,20 +31,31 @@
         <p class="text-xs text-gray-500">Sistema de gestión escolar</p>
       </div>
 
-      <div class="flex items-center gap-4">
-        <div class="text-right">
+      <div class="flex items-center gap-3">
+        <!-- nombre y rol de quien inicio sesion -->
+        <div class="text-right leading-tight">
           <p class="text-sm font-semibold text-texto">{{ sesion?.nombre }}</p>
-          <span class="inline-block text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">
+          <span class="inline-block mt-0.5 text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">
             {{ sesion?.rol }}
           </span>
         </div>
+
         <!-- avatar con iniciales -->
-        <div class="h-10 w-10 rounded-full bg-primario text-white flex items-center justify-center text-sm font-bold ring-2 ring-primario-claro">
+        <div class="h-10 w-10 shrink-0 rounded-full bg-primario text-white flex items-center justify-center text-sm font-bold ring-2 ring-primario-claro">
           {{ iniciales }}
         </div>
-        <button type="button" (click)="cerrarSesion()"
-          class="flex items-center gap-2 rounded-lg bg-primario-oscuro text-white text-sm px-3 py-2 hover:bg-acento transition-colors">
-          <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+
+        <!-- separador visual entre la persona y sus acciones -->
+        <span class="hidden sm:block h-8 w-px bg-gray-200 mx-1"></span>
+
+        <!-- en pantallas medianas solo se ve el icono; desde lg tambien el texto -->
+        <a routerLink="/cambiar-contrasena" title="Cambiar contraseña"
+          class="flex items-center gap-2 whitespace-nowrap rounded-lg border border-primario text-primario text-sm px-3 py-2 hover:bg-primario-claro transition-colors">
+          <i class="bi bi-key"></i><span class="hidden lg:inline">Contraseña</span>
+        </a>
+        <button type="button" (click)="cerrarSesion()" title="Cerrar sesión"
+          class="flex items-center gap-2 whitespace-nowrap rounded-lg bg-primario-oscuro text-white text-sm px-3 py-2 hover:bg-acento transition-colors">
+          <i class="bi bi-box-arrow-right"></i><span class="hidden lg:inline">Cerrar sesión</span>
         </button>
       </div>
     </header>
