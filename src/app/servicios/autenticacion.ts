@@ -52,4 +52,18 @@ export class Autenticacion {
   cambiarContrasena(contrasenaActual: string, contrasenaNueva: string): Observable<void> {
     return this.http.put<void>(`${this.urlBase}/auth/contrasena`, { contrasenaActual, contrasenaNueva });
   }
+
+  /** CU002: pide un codigo de recuperacion. La respuesta es la misma exista o no el correo*/
+  solicitarCodigo(correo: string): Observable<{ mensaje: string }> {
+    return this.http.post<{ mensaje: string }>(`${this.urlBase}/auth/recuperacion/solicitar`, { correo });
+  }
+
+  /** CU003: cambia la contrasena usando el codigo recibido */
+  restablecerContrasena(correo: string, codigo: string, contrasenaNueva: string): Observable<void> {
+    return this.http.post<void>(`${this.urlBase}/auth/recuperacion/restablecer`, {
+      correo,
+      codigo,
+      contrasenaNueva,
+    });
+  }
 }

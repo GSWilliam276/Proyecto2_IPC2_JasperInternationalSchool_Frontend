@@ -1,0 +1,147 @@
+<main class="relative min-h-screen bg-fondo flex items-center justify-center p-4 overflow-hidden">
+
+  <!-- Marca arriba a la derecha, igual que en el login -->
+  <div class="absolute top-4 right-4 md:top-6 md:right-8 flex items-center gap-3">
+    <p class="hidden sm:block font-titulo text-lg font-bold text-primario-oscuro">Jasper International School</p>
+    <img src="logo.svg" alt="Logo de Jasper International School" class="h-12 md:h-14 w-auto" />
+  </div>
+
+  <section class="relative w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">
+    <header class="bg-primario-oscuro text-white px-8 py-6">
+      <h1 class="text-2xl font-semibold">Recuperar contraseña</h1>
+      <p class="text-primario-claro text-sm mt-1">
+        @if (terminado()) {
+          Listo
+        } @else if (paso() === 1) {
+          Paso 1 de 2: solicite un código
+        } @else {
+          Paso 2 de 2: elija su contraseña nueva
+        }
+      </p>
+    </header>
+
+    @if (terminado()) {
+
+      <!-- Final: la contraseña ya se cambio -->
+      <div class="px-8 py-6 space-y-4">
+        <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2">
+          <i class="bi bi-check-circle"></i> Su contraseña se actualizó correctamente.
+        </p>
+        <a routerLink="/login"
+          class="block w-full text-center bg-primario text-white font-medium rounded-lg py-2 hover:bg-primario-oscuro transition-colors">
+          Ir a iniciar sesión
+        </a>
+      </div>
+
+    } @else if (paso() === 1) {
+
+      <!-- Paso 1: pedir el codigo -->
+      <form [formGroup]="formularioCorreo" (ngSubmit)="solicitar()" class="px-8 py-6 space-y-4" novalidate>
+        <p class="text-sm text-gray-600">
+          Ingrese el correo de su cuenta. Si está registrado, recibirá un código para elegir una contraseña nueva.
+        </p>
+
+        <div>
+          <label for="correo-solicitud" class="block text-sm font-medium text-texto mb-1">Correo</label>
+          <input id="correo-solicitud" type="email" formControlName="correo" autocomplete="username"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+          @if (formularioCorreo.controls.correo.touched && formularioCorreo.controls.correo.invalid) {
+            <p class="text-sm text-acento mt-1">Ingrese un correo válido</p>
+          }
+        </div>
+
+        @if (error()) {
+          <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+        }
+
+        <button type="submit" [disabled]="cargando()"
+          class="w-full bg-primario text-white font-medium rounded-lg py-2 hover:bg-primario-oscuro disabled:opacity-60 transition-colors">
+          {{ cargando() ? 'Enviando...' : 'Solicitar código' }}
+        </button>
+
+        <div class="flex items-center justify-between text-sm">
+          <button type="button" (click)="irAlPaso2()" class="text-primario hover:underline">Ya tengo un código</button>
+          <a routerLink="/login" class="text-primario hover:underline">Volver al inicio de sesión</a>
+        </div>
+      </form>
+
+    } @else {
+
+      <!-- Paso 2: usar el codigo -->
+      <form [formGroup]="formularioRestablecer" (ngSubmit)="restablecer()" class="px-8 py-6 space-y-4" novalidate>
+
+        @if (aviso()) {
+          <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2">{{ aviso() }}</p>
+        }
+
+        <div>
+          <label for="correo-restablecer" class="block text-sm font-medium text-texto mb-1">Correo</label>
+          <input id="correo-restablecer" type="email" formControlName="correo" autocomplete="username"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+          @if (formularioRestablecer.controls.correo.touched && formularioRestablecer.controls.correo.invalid) {
+            <p class="text-sm text-acento mt-1">Ingrese un correo válido</p>
+          }
+        </div>
+
+        <div>
+          <label for="codigo" class="block text-sm font-medium text-texto mb-1">Código de recuperación</label>
+          <!-- el codigo tiene 8 caracteres; "uppercase" solo cambia como se ve, el backend lo normaliza -->
+          <input id="codigo" type="text" formControlName="codigo" autocomplete="off" maxlength="8"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-primario" />
+          @if (formularioRestablecer.controls.codigo.touched && formularioRestablecer.controls.codigo.invalid) {
+            <p class="text-sm text-acento mt-1">El código tiene 8 caracteres</p>
+          }
+        </div>
+
+        <div>
+          <label for="contrasenaNueva" class="block text-sm font-medium text-texto mb-1">Contraseña nueva</label>
+          <div class="relative">
+            <input id="contrasenaNueva" [type]="verContrasena() ? 'text' : 'password'" formControlName="contrasenaNueva" autocomplete="new-password"
+              class="w-full rounded-lg border border-gray-300 pl-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+            <button type="button" (click)="verContrasena.set(!verContrasena())"
+              [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-primario">
+              <i [class]="verContrasena() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
+          @if (formularioRestablecer.controls.contrasenaNueva.touched && formularioRestablecer.controls.contrasenaNueva.invalid) {
+            <p class="text-sm text-acento mt-1">Entre 8 y 64 caracteres</p>
+          }
+        </div>
+
+        <div>
+          <label for="confirmar" class="block text-sm font-medium text-texto mb-1">Confirmar contraseña nueva</label>
+          <div class="relative">
+            <input id="confirmar" [type]="verContrasena() ? 'text' : 'password'" formControlName="confirmar" autocomplete="new-password"
+              class="w-full rounded-lg border border-gray-300 pl-3 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+            <button type="button" (click)="verContrasena.set(!verContrasena())"
+              [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-primario">
+              <i [class]="verContrasena() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
+          @if (formularioRestablecer.controls.confirmar.touched && formularioRestablecer.controls.confirmar.invalid) {
+            <p class="text-sm text-acento mt-1">Confirme la contraseña nueva</p>
+          }
+          @if (formularioRestablecer.hasError('noCoinciden') && formularioRestablecer.controls.confirmar.touched) {
+            <p class="text-sm text-acento mt-1">La confirmación no coincide con la contraseña nueva</p>
+          }
+        </div>
+
+        @if (error()) {
+          <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+        }
+
+        <button type="submit" [disabled]="cargando()"
+          class="w-full bg-primario text-white font-medium rounded-lg py-2 hover:bg-primario-oscuro disabled:opacity-60 transition-colors">
+          {{ cargando() ? 'Guardando...' : 'Cambiar contraseña' }}
+        </button>
+
+        <div class="flex items-center justify-between text-sm">
+          <button type="button" (click)="volverAlPaso1()" class="text-primario hover:underline">Pedir otro código</button>
+          <a routerLink="/login" class="text-primario hover:underline">Volver al inicio de sesión</a>
+        </div>
+      </form>
+    }
+  </section>
+</main>

@@ -12,6 +12,7 @@ import { ListaGrados } from './paginas/lista-grados/lista-grados';
 import { ListaCarreras } from './paginas/lista-carreras/lista-carreras';
 import { Inicio } from './paginas/inicio/inicio';
 import { CambiarContrasena } from './paginas/cambiar-contrasena/cambiar-contrasena';
+import { RecuperarContrasena } from './paginas/recuperar-contrasena/recuperar-contrasena';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'sin-acceso', component: SinAcceso },
   { path: '', component: Bienvenida, pathMatch: 'full' },
+  { path: 'recuperar', component: RecuperarContrasena },
   {
     //El marco envuelve todas las pantallas que requieren sesion
     //Se pone el guard de sesion una sola vez aqui, y cubre a todas las hijas
