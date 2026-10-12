@@ -74,6 +74,8 @@ export class Login {
     switch (rol) {
       case 'SUPERADMIN':
         return '/inicio';
+      case 'ADMIN':
+        return '/inicio';
       default:
         return '/sin-acceso'; //los demas paneles todavia no existen por el momento
     }

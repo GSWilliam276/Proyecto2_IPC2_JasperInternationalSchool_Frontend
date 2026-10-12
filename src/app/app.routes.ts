@@ -13,6 +13,7 @@ import { ListaCarreras } from './paginas/lista-carreras/lista-carreras';
 import { Inicio } from './paginas/inicio/inicio';
 import { CambiarContrasena } from './paginas/cambiar-contrasena/cambiar-contrasena';
 import { RecuperarContrasena } from './paginas/recuperar-contrasena/recuperar-contrasena';
+import { ListaEmpleados } from './paginas/lista-empleados/lista-empleados';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -62,6 +63,12 @@ export const routes: Routes = [
         data: { roles: ['SUPERADMIN'] },
       },
       { path: 'cambiar-contrasena', component: CambiarContrasena },
+      {
+        path: 'empleados',
+        component: ListaEmpleados,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
     ],
   },
   //Cualquier direccion que no exista se manda al login
