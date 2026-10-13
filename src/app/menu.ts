@@ -16,6 +16,7 @@ const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [
   { ruta: '/anios-lectivos', etiqueta: 'Años lectivos', icono: 'calendar-event' },
   { ruta: '/grados', etiqueta: 'Grados', icono: 'mortarboard' },
   { ruta: '/carreras', etiqueta: 'Carreras', icono: 'journal-bookmark' },
+  { ruta: '/cursos', etiqueta: 'Cursos', icono: 'book' },
 ];
 
 export function opcionesPorRol(rol: string | undefined): OpcionMenu[] {
