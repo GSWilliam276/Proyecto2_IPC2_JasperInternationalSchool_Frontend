@@ -15,6 +15,7 @@ import { CambiarContrasena } from './paginas/cambiar-contrasena/cambiar-contrase
 import { RecuperarContrasena } from './paginas/recuperar-contrasena/recuperar-contrasena';
 import { ListaEmpleados } from './paginas/lista-empleados/lista-empleados';
 import { ListaCursos } from './paginas/lista-cursos/lista-cursos';
+import { ListaCurriculos } from './paginas/lista-curriculos/lista-curriculos';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla.
@@ -73,6 +74,12 @@ export const routes: Routes = [
       {
         path: 'cursos',
         component: ListaCursos,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+      {
+        path: 'curriculos',
+        component: ListaCurriculos,
         canActivate: [rolGuard],
         data: { roles: ['ADMIN', 'SUPERADMIN'] },
       },

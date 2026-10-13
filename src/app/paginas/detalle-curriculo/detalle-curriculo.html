@@ -1,0 +1,72 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-xl shadow-lg max-w-lg w-full p-6 space-y-4 my-auto">
+
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h4 class="text-lg font-semibold text-texto">Currículo de {{ curriculo().gradoNombre }}</h4>
+        <p class="text-sm text-gray-500">
+          {{ etiquetaNivel(curriculo().nivel) }}
+          @if (curriculo().carreraNombre) {
+            · {{ curriculo().carreraNombre }}
+          }
+        </p>
+      </div>
+      <button type="button" (click)="cerrar()" aria-label="Cerrar"
+        class="text-gray-400 hover:text-texto"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+
+    <!-- cursos del curriculo -->
+    <ul class="divide-y divide-gray-100 border border-gray-100 rounded-lg">
+      @for (c of detalle()?.cursos ?? []; track c.idCurso) {
+        <li class="flex items-center justify-between gap-3 px-3 py-2 text-sm">
+          <span>
+            {{ c.nombre }}
+            @if (c.estado !== 'ACTIVO') {
+              <span class="ml-1 text-xs rounded-full bg-gray-200 text-gray-600 px-2 py-0.5">Inactivo</span>
+            }
+          </span>
+          @if (porQuitar() === c.idCurso) {
+            <span class="flex items-center gap-2 text-xs">
+              ¿Quitar?
+              <button type="button" (click)="quitar(c.idCurso)" [disabled]="trabajando()"
+                class="rounded-lg px-2 py-1 bg-acento text-white disabled:opacity-60">Sí</button>
+              <button type="button" (click)="cancelarQuitar()"
+                class="rounded-lg px-2 py-1 border border-gray-300 text-texto">No</button>
+            </span>
+          } @else {
+            <button type="button" (click)="pedirQuitar(c.idCurso)"
+              class="text-xs rounded-lg px-3 py-1 border border-acento text-acento hover:bg-red-50">Quitar</button>
+          }
+        </li>
+      } @empty {
+        <li class="px-3 py-6 text-center text-sm text-gray-500">
+          {{ detalle() ? 'Este currículo todavía no tiene cursos' : 'Cargando...' }}
+        </li>
+      }
+    </ul>
+
+    <!-- agregar un curso -->
+    <div class="flex items-center gap-2">
+      <select #elegido
+        class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option value="">Seleccione un curso para agregar</option>
+        @for (c of disponibles(); track c.idCurso) {
+          <option [value]="c.idCurso">{{ c.nombre }}</option>
+        }
+      </select>
+      <button type="button" (click)="agregar(elegido.value)" [disabled]="trabajando()"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro disabled:opacity-60">
+        Agregar
+      </button>
+    </div>
+
+    <div class="flex justify-end">
+      <button type="button" (click)="cerrar()"
+        class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cerrar</button>
+    </div>
+  </div>
+</div>

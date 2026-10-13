@@ -8,6 +8,7 @@ export interface OpcionMenu {
 /** Lo que usa el Admin. El SuperAdmin tambien, por herencia */
 const OPCIONES_ADMIN: OpcionMenu[] = [
   { ruta: '/empleados', etiqueta: 'Empleados', icono: 'people' },
+  { ruta: '/curriculos', etiqueta: 'Currículos', icono: 'diagram-3' },
 ];
 
 const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [

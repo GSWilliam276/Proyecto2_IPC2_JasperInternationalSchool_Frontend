@@ -1,0 +1,73 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Currículos</h2>
+  <p class="text-sm text-gray-500">Cursos que imparte cada grado. Un grado necesita currículo antes de tener secciones.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex items-center gap-3">
+      <input type="search" placeholder="Buscar por grado o carrera"
+        (input)="alEscribir($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Nuevo currículo
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Grado</th>
+          <th class="px-3 py-2">Nivel</th>
+          <th class="px-3 py-2">Carrera</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of curriculos(); track c.idCurriculo) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 font-medium">{{ c.gradoNombre }}</td>
+            <td class="px-3 py-2">{{ etiquetaNivel(c.nivel) }}</td>
+            <td class="px-3 py-2">{{ c.carreraNombre || '—' }}</td>
+            <td class="px-3 py-2">
+              <button type="button" (click)="viendo.set(c)"
+                class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                Ver cursos
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron resultados' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+@if (creando()) {
+  <app-formulario-curriculo (creado)="alCrear($event)" (cancelado)="creando.set(false)" />
+}
+
+@if (viendo(); as c) {
+  <app-detalle-curriculo [curriculo]="c" (cerrado)="viendo.set(null)" />
+}
