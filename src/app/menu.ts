@@ -12,6 +12,7 @@ const OPCIONES_ADMIN: OpcionMenu[] = [
   { ruta: '/secciones', etiqueta: 'Secciones', icono: 'grid-3x3-gap' },
   { ruta: '/parametros-biblioteca', etiqueta: 'Parámetros de biblioteca', icono: 'gear' },
   { ruta: '/tarifas', etiqueta: 'Tarifas', icono: 'cash-coin' },
+  { ruta: '/actividades', etiqueta: 'Actividades', icono: 'trophy' },
 ];
 
 const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [
