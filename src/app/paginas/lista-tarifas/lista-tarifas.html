@@ -1,0 +1,94 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Tarifas</h2>
+  <p class="text-sm text-gray-500">Monto de la inscripción y de la mensualidad de cada grado, por año lectivo.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex flex-wrap items-center gap-3">
+      <select (change)="alCambiarGrado($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option value="">Todos los grados</option>
+        @for (g of grados(); track g.idGrado) {
+          <option [value]="g.idGrado">{{ g.nombre }}</option>
+        }
+      </select>
+      <label class="flex items-center gap-2 text-sm text-texto">
+        <input type="checkbox" (change)="alCambiarAnteriores($any($event.target).checked)" class="rounded" />
+        Incluir años anteriores
+      </label>
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Nueva tarifa
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Grado</th>
+          <th class="px-3 py-2">Nivel</th>
+          <th class="px-3 py-2">Concepto</th>
+          <th class="px-3 py-2">Año lectivo</th>
+          <th class="px-3 py-2">Monto</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of tarifas(); track t.idTarifa) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 font-medium">{{ t.gradoNombre }}</td>
+            <td class="px-3 py-2">{{ etiquetaNivel(t.nivel) }}</td>
+            <td class="px-3 py-2">{{ etiquetaConcepto(t.concepto) }}</td>
+            <td class="px-3 py-2">
+              {{ t.anioNombre }}
+              @if (esDeAnioCerrado(t)) {
+                <span class="ml-1 text-xs rounded-full bg-gray-200 text-gray-600 px-2 py-0.5">Cerrado</span>
+              }
+            </td>
+            <td class="px-3 py-2 font-medium">{{ t.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</td>
+            <td class="px-3 py-2">
+              @if (esDeAnioCerrado(t)) {
+                <span class="text-xs text-gray-400">Sin acciones</span>
+              } @else {
+                <button type="button" (click)="editando.set(t)"
+                  class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                  Editar monto
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron tarifas' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+@if (creando()) {
+  <app-formulario-tarifa (guardado)="alGuardar()" (cancelado)="creando.set(false)" />
+}
+
+@if (editando(); as t) {
+  <app-formulario-tarifa [tarifa]="t" (guardado)="alGuardar()" (cancelado)="editando.set(null)" />
+}

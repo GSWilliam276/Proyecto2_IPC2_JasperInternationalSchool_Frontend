@@ -18,6 +18,7 @@ import { ListaCursos } from './paginas/lista-cursos/lista-cursos';
 import { ListaCurriculos } from './paginas/lista-curriculos/lista-curriculos';
 import { ListaSecciones } from './paginas/lista-secciones/lista-secciones';
 import { ParametrosBiblioteca } from './paginas/parametros-biblioteca/parametros-biblioteca';
+import { ListaTarifas } from './paginas/lista-tarifas/lista-tarifas';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -94,6 +95,12 @@ export const routes: Routes = [
       {
         path: 'parametros-biblioteca',
         component: ParametrosBiblioteca,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+      {
+        path: 'tarifas',
+        component: ListaTarifas,
         canActivate: [rolGuard],
         data: { roles: ['ADMIN', 'SUPERADMIN'] },
       },
