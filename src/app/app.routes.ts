@@ -16,9 +16,11 @@ import { RecuperarContrasena } from './paginas/recuperar-contrasena/recuperar-co
 import { ListaEmpleados } from './paginas/lista-empleados/lista-empleados';
 import { ListaCursos } from './paginas/lista-cursos/lista-cursos';
 import { ListaCurriculos } from './paginas/lista-curriculos/lista-curriculos';
+import { ListaSecciones } from './paginas/lista-secciones/lista-secciones';
+import { ParametrosBiblioteca } from './paginas/parametros-biblioteca/parametros-biblioteca';
 
 /**
- * Cada ruta asocia una direccion del navegador con una pantalla.
+ * Cada ruta asocia una direccion del navegador con una pantalla
  */
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -80,6 +82,18 @@ export const routes: Routes = [
       {
         path: 'curriculos',
         component: ListaCurriculos,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+      {
+        path: 'secciones',
+        component: ListaSecciones,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+      {
+        path: 'parametros-biblioteca',
+        component: ParametrosBiblioteca,
         canActivate: [rolGuard],
         data: { roles: ['ADMIN', 'SUPERADMIN'] },
       },

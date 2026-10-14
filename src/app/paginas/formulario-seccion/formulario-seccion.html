@@ -1,0 +1,83 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
+    class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
+    <h4 class="text-lg font-semibold text-texto">
+      {{ esEdicion() ? 'Editar sección' : 'Nueva sección' }}
+    </h4>
+
+    @if (seccion(); as s) {
+      <!-- al editar, lo que no cambia se muestra como texto -->
+      <div class="rounded-lg bg-primario-claro/50 p-3 text-sm text-primario-oscuro">
+        <p><strong>{{ s.gradoNombre }}</strong> ({{ etiquetaNivel(s.nivel) }})</p>
+        @if (s.carreraNombre) {
+          <p>{{ s.carreraNombre }}</p>
+        }
+        <p>{{ s.anioNombre }} · {{ s.inscritos }} inscritos</p>
+      </div>
+    } @else {
+      <p class="text-sm text-gray-500">La sección se crea en el año lectivo activo.</p>
+
+      <div>
+        <label for="idGrado" class="block text-sm font-medium text-texto mb-1">Grado</label>
+        <select id="idGrado" formControlName="idGrado"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+          <option [ngValue]="null" disabled>Seleccione un grado</option>
+          @for (g of grados(); track g.idGrado) {
+            <option [ngValue]="g.idGrado">{{ g.nombre }} ({{ etiquetaNivel(g.nivel) }})</option>
+          }
+        </select>
+        @if (formulario.controls.idGrado.touched && formulario.controls.idGrado.invalid) {
+          <p class="text-sm text-acento mt-1">Seleccione un grado</p>
+        }
+      </div>
+
+      @if (esDiversificado()) {
+        <div>
+          <label for="idCarrera" class="block text-sm font-medium text-texto mb-1">Carrera</label>
+          <select id="idCarrera" formControlName="idCarrera"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+            <option [ngValue]="null" disabled>Seleccione una carrera</option>
+            @for (c of carreras(); track c.idCarrera) {
+              <option [ngValue]="c.idCarrera">{{ c.nombre }}</option>
+            }
+          </select>
+          @if (formulario.controls.idCarrera.touched && formulario.controls.idCarrera.invalid) {
+            <p class="text-sm text-acento mt-1">Los grados de Diversificado necesitan una carrera</p>
+          }
+        </div>
+      }
+    }
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-texto mb-1">Nombre</label>
+        <input id="nombre" type="text" formControlName="nombre" maxlength="10" placeholder="A, B, Única..."
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+        @if (formulario.controls.nombre.touched && formulario.controls.nombre.invalid) {
+          <p class="text-sm text-acento mt-1">Obligatorio (máximo 10 caracteres)</p>
+        }
+      </div>
+      <div>
+        <label for="cupoMaximo" class="block text-sm font-medium text-texto mb-1">Cupo máximo</label>
+        <input id="cupoMaximo" type="number" formControlName="cupoMaximo" min="1" max="200"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+        @if (formulario.controls.cupoMaximo.touched && formulario.controls.cupoMaximo.invalid) {
+          <p class="text-sm text-acento mt-1">{{ avisoCupo() }}</p>
+        }
+      </div>
+    </div>
+
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" (click)="cancelar()" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+      <button type="submit" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+        {{ guardando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

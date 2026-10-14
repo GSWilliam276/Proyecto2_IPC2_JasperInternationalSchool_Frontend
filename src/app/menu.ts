@@ -9,6 +9,8 @@ export interface OpcionMenu {
 const OPCIONES_ADMIN: OpcionMenu[] = [
   { ruta: '/empleados', etiqueta: 'Empleados', icono: 'people' },
   { ruta: '/curriculos', etiqueta: 'Currículos', icono: 'diagram-3' },
+  { ruta: '/secciones', etiqueta: 'Secciones', icono: 'grid-3x3-gap' },
+  { ruta: '/parametros-biblioteca', etiqueta: 'Parámetros de biblioteca', icono: 'gear' },
 ];
 
 const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [
