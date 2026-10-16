@@ -1,0 +1,95 @@
+@if (detalle(); as e) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 space-y-4 my-auto">
+
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h4 class="text-lg font-semibold text-texto">{{ e.nombre }}</h4>
+          <p class="text-sm text-gray-500">CUI {{ e.cui }} · {{ e.edad }} años</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+            [class.bg-primario-claro]="e.estado === 'ACTIVO'"
+            [class.text-primario-oscuro]="e.estado === 'ACTIVO'"
+            [class.bg-gray-200]="e.estado === 'INACTIVO'"
+            [class.text-gray-600]="e.estado === 'INACTIVO'"
+            [class.bg-acento/15]="e.estado === 'GRADUADO'"
+            [class.text-acento]="e.estado === 'GRADUADO'">
+            {{ etiquetaEstado(e.estado) }}
+          </span>
+          <button type="button" (click)="cerrar()" aria-label="Cerrar" class="text-gray-400 hover:text-texto">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      @if (error()) {
+        <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+      }
+
+      <section>
+        <h5 class="text-sm font-semibold text-primario-oscuro mb-2">Datos personales</h5>
+        <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <div><dt class="text-gray-500">Fecha de nacimiento</dt><dd>{{ formatearFecha(e.fechaNacimiento) }}</dd></div>
+          <div><dt class="text-gray-500">Teléfono</dt><dd>{{ e.telefono }}</dd></div>
+          <div class="sm:col-span-2"><dt class="text-gray-500">Dirección</dt><dd>{{ e.direccion }}</dd></div>
+        </dl>
+      </section>
+
+      <section>
+        <h5 class="text-sm font-semibold text-primario-oscuro mb-2">Datos médicos</h5>
+        <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <div><dt class="text-gray-500">Alergias</dt><dd>{{ e.alergias || 'Ninguna registrada' }}</dd></div>
+          <div><dt class="text-gray-500">Condiciones médicas</dt><dd>{{ e.condicionesMedicas || 'Ninguna registrada' }}</dd></div>
+        </dl>
+      </section>
+
+      <section>
+        <h5 class="text-sm font-semibold text-primario-oscuro mb-2">Encargados</h5>
+        <div class="grid sm:grid-cols-2 gap-3 text-sm">
+          <div class="rounded-lg bg-primario-claro/40 p-3">
+            <p class="font-medium">{{ e.encargadoNombre }}</p>
+            <p class="text-gray-600">{{ e.encargadoParentesco }} · {{ e.encargadoTelefono }}</p>
+          </div>
+          @if (e.encargado2Nombre) {
+            <div class="rounded-lg bg-primario-claro/40 p-3">
+              <p class="font-medium">{{ e.encargado2Nombre }}</p>
+              <p class="text-gray-600">{{ e.encargado2Parentesco }} · {{ e.encargado2Telefono }}</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h5 class="text-sm font-semibold text-primario-oscuro mb-2">Graduaciones</h5>
+        @if ((e.graduaciones?.length ?? 0) > 0) {
+          <ul class="space-y-1 text-sm">
+            @for (g of e.graduaciones ?? []; track g.nivel) {
+              <li class="flex items-center gap-2">
+                <i class="bi bi-mortarboard text-primario"></i>
+                Graduado de {{ etiquetaNivel(g.nivel) }}
+                <span class="text-gray-500">· {{ formatearFecha(g.fecha) }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-sm text-gray-600">Sin graduaciones registradas.</p>
+        }
+      </section>
+
+      <section>
+        <h5 class="text-sm font-semibold text-primario-oscuro mb-2">Acceso al sistema</h5>
+        @if (e.tieneAcceso) {
+          <p class="text-sm">Con acceso: <strong>{{ e.correo }}</strong></p>
+        } @else {
+          <p class="text-sm text-gray-600">Todavía no tiene acceso. Se crea al inscribirlo.</p>
+        }
+      </section>
+
+      <div class="flex justify-end">
+        <button type="button" (click)="cerrar()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

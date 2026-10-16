@@ -1,0 +1,165 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Estudiantes</h2>
+  <p class="text-sm text-gray-500">Registro de estudiantes con sus datos, encargados y estado. Nunca se eliminan.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex flex-wrap items-center gap-3">
+      <input type="search" placeholder="Buscar por nombre o CUI"
+        (input)="alEscribir($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      <select (change)="alCambiarEstado($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option value="">Todos los estados</option>
+        <option value="ACTIVO">Activos</option>
+        <option value="INACTIVO">Inactivos</option>
+        <option value="GRADUADO">Graduados</option>
+      </select>
+      <button type="button" (click)="creando.set(true)"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">
+        Registrar estudiante
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Estudiante</th>
+          <th class="px-3 py-2">Edad</th>
+          <th class="px-3 py-2">Encargado</th>
+          <th class="px-3 py-2">Acceso</th>
+          <th class="px-3 py-2">Estado</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (e of estudiantes(); track e.idUsuario) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">
+              <span class="font-medium">{{ e.nombre }}</span>
+              <span class="block text-xs text-gray-500">{{ e.cui }}</span>
+            </td>
+            <td class="px-3 py-2">{{ e.edad }} años</td>
+            <td class="px-3 py-2">
+              {{ e.encargadoNombre }}
+              <span class="block text-xs text-gray-500">{{ e.encargadoParentesco }} · {{ e.encargadoTelefono }}</span>
+            </td>
+            <td class="px-3 py-2">
+              @if (e.tieneAcceso) {
+                <span class="text-xs rounded-full bg-primario-claro text-primario-oscuro px-2 py-0.5">Con acceso</span>
+              } @else {
+                <span class="text-xs text-gray-400">Sin acceso</span>
+              }
+            </td>
+            <td class="px-3 py-2">
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-primario-claro]="e.estado === 'ACTIVO'"
+                [class.text-primario-oscuro]="e.estado === 'ACTIVO'"
+                [class.bg-gray-200]="e.estado === 'INACTIVO'"
+                [class.text-gray-600]="e.estado === 'INACTIVO'"
+                [class.bg-acento/15]="e.estado === 'GRADUADO'"
+                [class.text-acento]="e.estado === 'GRADUADO'">
+                {{ etiquetaEstado(e.estado) }}
+              </span>
+            </td>
+            <td class="px-3 py-2">
+              <div class="flex flex-wrap gap-2">
+                <button type="button" (click)="viendo.set(e)"
+                  class="text-xs rounded-lg px-3 py-1 border border-gray-300 text-texto hover:bg-gray-50">
+                  Ver
+                </button>
+                <!-- un graduado queda cerrado: solo se puede consultar -->
+                @if (e.estado !== 'GRADUADO') {
+                  <button type="button" (click)="editando.set(e)"
+                    class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                    Editar
+                  </button>
+                  <button type="button" (click)="graduando.set(e)"
+                    class="text-xs rounded-lg px-3 py-1 border border-primario-oscuro text-primario-oscuro hover:bg-primario-claro">
+                    Graduación de nivel
+                  </button>
+                  @if (e.estado === 'ACTIVO') {
+                    <button type="button" (click)="pedirConfirmacion(e, 'desactivar')"
+                      class="text-xs rounded-lg px-3 py-1 text-white bg-acento">Desactivar</button>
+                    <button type="button" (click)="pedirConfirmacion(e, 'graduar')"
+                      class="text-xs rounded-lg px-3 py-1 text-white bg-primario-oscuro">Graduar</button>
+                  } @else {
+                    <button type="button" (click)="pedirConfirmacion(e, 'activar')"
+                      class="text-xs rounded-lg px-3 py-1 text-white bg-primario">Activar</button>
+                  }
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron estudiantes' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+<!-- Confirmacion de activar, desactivar o graduar -->
+@if (pendiente(); as p) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Confirmar acción</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Desea {{ verbo(p.accion) }} a <strong>{{ p.estudiante.nombre }}</strong>?
+      </p>
+      @if (p.accion === 'graduar') {
+        <p class="text-xs text-gray-500 mt-2">
+          Use esta opción cuando el estudiante egresa del colegio al terminar Diversificado: queda cerrado y no se
+          puede reactivar, editar ni cambiar de estado. Si solo terminó otro nivel, use «Graduación de nivel».
+        </p>
+      }
+      @if (p.accion === 'desactivar') {
+        <p class="text-xs text-gray-500 mt-2">Su historial se conserva y se puede reactivar después.</p>
+      }
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="cancelarConfirmacion()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmar()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+          {{ procesando() ? 'Procesando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (creando()) {
+  <app-formulario-estudiante (guardado)="alGuardar()" (cancelado)="creando.set(false)" />
+}
+
+@if (editando(); as e) {
+  <app-formulario-estudiante [estudiante]="e" (guardado)="alGuardar()" (cancelado)="editando.set(null)" />
+}
+
+@if (viendo(); as e) {
+  <app-detalle-estudiante [estudiante]="e" (cerrado)="viendo.set(null)" />
+}
+
+@if (graduando(); as e) {
+  <app-formulario-graduacion [estudiante]="e" (guardado)="alGraduarNivel()" (cancelado)="graduando.set(null)" />
+}

@@ -21,6 +21,7 @@ import { ParametrosBiblioteca } from './paginas/parametros-biblioteca/parametros
 import { ListaTarifas } from './paginas/lista-tarifas/lista-tarifas';
 import { ListaActividades } from './paginas/lista-actividades/lista-actividades';
 import { ListaAsignaciones } from './paginas/lista-asignaciones/lista-asignaciones';
+import { ListaEstudiantes } from './paginas/lista-estudiantes/lista-estudiantes';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -115,6 +116,12 @@ export const routes: Routes = [
       {
         path: 'asignaciones',
         component: ListaAsignaciones,
+        canActivate: [rolGuard],
+        data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+      {
+        path: 'estudiantes',
+        component: ListaEstudiantes,
         canActivate: [rolGuard],
         data: { roles: ['ADMIN', 'SUPERADMIN'] },
       },

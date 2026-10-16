@@ -14,6 +14,7 @@ const OPCIONES_ADMIN: OpcionMenu[] = [
   { ruta: '/tarifas', etiqueta: 'Tarifas', icono: 'cash-coin' },
   { ruta: '/actividades', etiqueta: 'Actividades', icono: 'trophy' },
   { ruta: '/asignaciones', etiqueta: 'Asignaciones', icono: 'person-workspace' },
+  { ruta: '/estudiantes', etiqueta: 'Estudiantes', icono: 'person-lines-fill' },
 ];
 
 const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [
