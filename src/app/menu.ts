@@ -5,34 +5,57 @@ export interface OpcionMenu {
   icono: string; //Bootstrap Icons
 }
 
-/** Lo que usa el Admin. El SuperAdmin tambien, por herencia */
-const OPCIONES_ADMIN: OpcionMenu[] = [
-  { ruta: '/empleados', etiqueta: 'Empleados', icono: 'people' },
-  { ruta: '/curriculos', etiqueta: 'Currículos', icono: 'diagram-3' },
-  { ruta: '/secciones', etiqueta: 'Secciones', icono: 'grid-3x3-gap' },
-  { ruta: '/parametros-biblioteca', etiqueta: 'Parámetros de biblioteca', icono: 'gear' },
-  { ruta: '/tarifas', etiqueta: 'Tarifas', icono: 'cash-coin' },
-  { ruta: '/actividades', etiqueta: 'Actividades', icono: 'trophy' },
-  { ruta: '/asignaciones', etiqueta: 'Asignaciones', icono: 'person-workspace' },
-  { ruta: '/estudiantes', etiqueta: 'Estudiantes', icono: 'person-lines-fill' },
-];
+/** Un grupo de opciones con su titulo: asi el menu y el inicio no son una lista larga y plana */
+export interface GrupoMenu {
+  titulo: string;
+  opciones: OpcionMenu[];
+}
 
-const OPCIONES_EXCLUSIVAS_SUPERADMIN: OpcionMenu[] = [
-  { ruta: '/superadmin', etiqueta: 'Super administradores', icono: 'shield-lock' },
-  { ruta: '/admins', etiqueta: 'Administradores', icono: 'person-badge' },
-  { ruta: '/anios-lectivos', etiqueta: 'Años lectivos', icono: 'calendar-event' },
-  { ruta: '/grados', etiqueta: 'Grados', icono: 'mortarboard' },
-  { ruta: '/carreras', etiqueta: 'Carreras', icono: 'journal-bookmark' },
-  { ruta: '/cursos', etiqueta: 'Cursos', icono: 'book' },
-];
+//Opciones, definidas una sola vez 
 
-export function opcionesPorRol(rol: string | undefined): OpcionMenu[] {
+const SUPERADMINS: OpcionMenu = { ruta: '/superadmin', etiqueta: 'Super administradores', icono: 'shield-lock' };
+const ADMINS: OpcionMenu = { ruta: '/admins', etiqueta: 'Administradores', icono: 'person-badge' };
+const ANIOS: OpcionMenu = { ruta: '/anios-lectivos', etiqueta: 'Años lectivos', icono: 'calendar-event' };
+const GRADOS: OpcionMenu = { ruta: '/grados', etiqueta: 'Grados', icono: 'mortarboard' };
+const CARRERAS: OpcionMenu = { ruta: '/carreras', etiqueta: 'Carreras', icono: 'journal-bookmark' };
+const EMPLEADOS: OpcionMenu = { ruta: '/empleados', etiqueta: 'Empleados', icono: 'people' };
+const CURSOS: OpcionMenu = { ruta: '/cursos', etiqueta: 'Cursos', icono: 'book' };
+const CURRICULOS: OpcionMenu = { ruta: '/curriculos', etiqueta: 'Currículos', icono: 'diagram-3' };
+const SECCIONES: OpcionMenu = { ruta: '/secciones', etiqueta: 'Secciones', icono: 'grid-3x3-gap' };
+const ASIGNACIONES: OpcionMenu = { ruta: '/asignaciones', etiqueta: 'Asignaciones', icono: 'person-workspace' };
+const ESTUDIANTES: OpcionMenu = { ruta: '/estudiantes', etiqueta: 'Estudiantes', icono: 'person-lines-fill' };
+const TARIFAS: OpcionMenu = { ruta: '/tarifas', etiqueta: 'Tarifas', icono: 'cash-coin' };
+const ACTIVIDADES: OpcionMenu = { ruta: '/actividades', etiqueta: 'Actividades', icono: 'trophy' };
+const PARAMETROS: OpcionMenu = { ruta: '/parametros-biblioteca', etiqueta: 'Parámetros de biblioteca', icono: 'gear' };
+
+//Grupos que comparten Admin y SuperAdmin
+
+const ACADEMICO: GrupoMenu = {
+  titulo: 'Académico',
+  opciones: [CURSOS, CURRICULOS, SECCIONES, ASIGNACIONES, ESTUDIANTES],
+};
+const FINANZAS: GrupoMenu = { titulo: 'Finanzas', opciones: [TARIFAS, ACTIVIDADES] };
+const BIBLIOTECA: GrupoMenu = { titulo: 'Biblioteca', opciones: [PARAMETROS] };
+
+/** Grupos del menu para cada rol. El SuperAdmin ve lo del Admin y, ademas, lo suyo */
+export function gruposPorRol(rol: string | undefined): GrupoMenu[] {
   switch (rol) {
     case 'SUPERADMIN':
-      return [...OPCIONES_EXCLUSIVAS_SUPERADMIN, ...OPCIONES_ADMIN];
+      return [
+        { titulo: 'Configuración global', opciones: [ANIOS, GRADOS, CARRERAS] },
+        { titulo: 'Personal', opciones: [SUPERADMINS, ADMINS, EMPLEADOS] },
+        ACADEMICO,
+        FINANZAS,
+        BIBLIOTECA,
+      ];
     case 'ADMIN':
-      return OPCIONES_ADMIN;
+      return [{ titulo: 'Personal', opciones: [EMPLEADOS] }, ACADEMICO, FINANZAS, BIBLIOTECA];
     default:
       return [];
   }
+}
+
+/** Lista plana de opciones, para quien no necesite los grupos */
+export function opcionesPorRol(rol: string | undefined): OpcionMenu[] {
+  return gruposPorRol(rol).flatMap((g) => g.opciones);
 }

@@ -1,7 +1,7 @@
-<main class="relative min-h-screen bg-fondo flex items-center justify-center p-4 overflow-hidden">
+<main class="relative min-h-screen bg-fondo flex items-center justify-center p-4 overflow-hidden lg:pr-[50%]">
 
-  <!-- Marca arriba a la derecha: logo y nombre -->
-  <div class="absolute top-4 right-4 md:top-6 md:right-8 flex items-center gap-3">
+  <!-- Marca arriba a la derecha: logo y nombre. Desde lg pasa al cuadro blanco de la foto -->
+  <div class="lg:hidden absolute top-4 right-4 md:top-6 md:right-8 flex items-center gap-3">
     <p class="hidden sm:block font-titulo text-lg font-bold text-primario-oscuro">Jasper International School</p>
     <img src="logo.svg" alt="Logo de Jasper International School" class="h-12 md:h-14 w-auto" />
   </div>
@@ -10,15 +10,14 @@
   <img src="logo.svg" alt="" aria-hidden="true"
     class="absolute -left-10 -bottom-10 h-[28rem] w-auto opacity-15 pointer-events-none select-none" />
 
-  <!-- Frase decorativa a la derecha: tenue, y solo en pantallas anchas para no tapar la tarjeta -->
-  <p class="hidden xl:block absolute left-[calc(50%+17rem)] top-1/2 -translate-y-1/2 max-w-xs text-left font-titulo text-3xl font-bold leading-tight text-primario/35 pointer-events-none select-none">
-    Nos complace recibirle en nuestro entorno virtual
-  </p>
-
   <section class="relative w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">
     <header class="bg-primario-oscuro text-white px-8 py-6">
       <h1 class="text-2xl font-semibold">Jasper International School</h1>
       <p class="text-primario-claro text-sm mt-1">Inicio de sesión</p>
+      <!-- la frase de bienvenida: en pantallas chicas va aqui, porque la foto no se muestra -->
+      <p class="lg:hidden text-primario-claro/80 text-xs mt-3">
+        Nos complace recibirle en nuestro entorno virtual de aprendizaje.
+      </p>
     </header>
 
     <form [formGroup]="formulario" (ngSubmit)="iniciarSesion()" class="px-8 py-6 space-y-4" novalidate>
@@ -66,4 +65,22 @@
       </a>
     </div>
   </section>
+
+  <!-- Mitad derecha: foto con el logo en un cuadro blanco y la frase de bienvenida. Solo desde lg -->
+  <aside class="hidden lg:block absolute inset-y-0 right-0 w-1/2">
+    <img src="login.jpg" alt="" aria-hidden="true"
+      class="absolute inset-0 h-full w-full object-cover object-[30%_center]" />
+    <!-- degradado verde abajo para que la frase se lea sobre la foto -->
+    <div class="absolute inset-0"
+      style="background-image: linear-gradient(to top, rgba(31,74,66,0.92), rgba(31,74,66,0.35) 45%, transparent)"></div>
+
+    <div class="absolute top-6 right-6 flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-lg">
+      <img src="logo.svg" alt="Logo de Jasper International School" class="h-12 w-auto" />
+      <p class="font-titulo text-lg font-bold text-primario-oscuro leading-tight">Jasper International School</p>
+    </div>
+
+    <p class="absolute bottom-10 left-10 right-10 font-titulo text-3xl xl:text-4xl font-bold leading-tight text-white">
+      Nos complace recibirle en nuestro entorno virtual de aprendizaje.
+    </p>
+  </aside>
 </main>

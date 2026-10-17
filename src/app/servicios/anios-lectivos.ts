@@ -44,4 +44,9 @@ export class AniosLectivos {
   cerrar(id: number): Observable<void> {
     return this.http.put<void>(`${this.url}/${id}/cerrar`, null);
   }
+
+  /** El año lectivo activo, o null si no hay ninguno. */
+  activo(): Observable<AnioLectivoResumen | null> {
+    return this.http.get<AnioLectivoResumen | null>(`${this.url}/activo`);
+  }
 }

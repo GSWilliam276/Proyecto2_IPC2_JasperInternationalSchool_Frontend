@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { opcionesPorRol } from '../../menu';
 import { Autenticacion } from '../../servicios/autenticacion';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { AniosLectivos, AnioLectivoResumen } from '../../servicios/anios-lectivos';
 
 /** Pantalla de inicio: saludo y una tarjeta por cada modulo que el rol puede usar */
 @Component({
@@ -11,6 +12,9 @@ import { Autenticacion } from '../../servicios/autenticacion';
 })
 export class Inicio {
   private readonly autenticacion = inject(Autenticacion);
+  private readonly anios = inject(AniosLectivos);
+  protected readonly anioActivo = signal<AnioLectivoResumen | null>(null);
+  protected readonly anioCargado = signal(false);
 
   protected readonly sesion = this.autenticacion.obtenerSesion();
   protected readonly opciones = opcionesPorRol(this.sesion?.rol);
@@ -29,5 +33,15 @@ export class Inicio {
       return 'Buenos días';
     }
     return hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+  }
+
+  ngOnInit(): void {
+    this.anios.activo().subscribe({
+      next: (anio) => {
+        this.anioActivo.set(anio);
+        this.anioCargado.set(true);
+      },
+      error: () => this.anioCargado.set(true), //Si falla, simplemente no se muestra la etiqueta
+    });
   }
 }

@@ -1,56 +1,60 @@
 <div class="min-h-screen bg-fondo text-texto flex flex-col">
 
-  <!-- Encabezado con el logo y el boton de ingreso -->
+    <!-- Encabezado con el logo -->
   <header class="bg-primario-oscuro text-white">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <img src="logo-claro.svg" alt="Logo de {{ colegio.nombre }}" class="h-10 w-auto" />
-        <span class="font-semibold">{{ colegio.nombre }}</span>
-      </div>
-      <a routerLink="/login"
-        class="rounded-lg bg-white text-primario-oscuro text-sm font-medium px-4 py-2 hover:bg-primario-claro transition-colors">
-        Iniciar sesión
-      </a>
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
+      <img src="logo-claro.svg" alt="Logo de {{ colegio.nombre }}" class="h-10 w-auto" />
+      <span class="font-semibold">{{ colegio.nombre }}</span>
     </div>
   </header>
 
   <main class="flex-1">
 
-    <!-- Portada -->
-    <section class="bg-primario-oscuro text-white">
-      <div class="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
-        <div>
+    <!-- Portada: texto sobre fondo verde a la izquierda y foto a la derecha; el logo va en un cuadro blanco sobre la foto -->
+    <section class="bg-primario-oscuro text-white md:grid md:grid-cols-2">
+      <div class="px-6 py-10 md:py-16 md:pl-[8vw] md:pr-10 flex flex-col justify-center">
+        <div class="max-w-xl">
           <p class="text-primario-claro text-sm uppercase tracking-widest">Quetzaltenango, Guatemala</p>
           <h1 class="text-3xl md:text-5xl font-bold mt-4 leading-tight">
             Le damos la bienvenida, con los brazos abiertos al conocimiento
           </h1>
           <p class="mt-5 text-primario-claro max-w-md">{{ colegio.descripcion }}</p>
           <a routerLink="/login"
-          class="inline-block mt-8 rounded-lg bg-acento text-white font-semibold px-6 py-3 hover:opacity-90 transition-opacity">
-          Ingresar al sistema
-        </a>
+            class="inline-flex items-center gap-2 mt-8 rounded-lg bg-acento text-white font-semibold px-6 py-3 hover:opacity-90 transition-opacity">
+            Ingresar al sistema <i class="bi bi-arrow-right"></i>
+          </a>
         </div>
+      </div>
 
-        <div class="flex justify-center">
-          <!-- rectangulo blanco: aqui se usa el logo original, de colores oscuros -->
-          <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 flex items-center gap-5">
-            <img src="logo.svg" alt="" class="h-28 md:h-40 w-auto" />
-            <p class="font-titulo text-3xl md:text-4xl font-bold text-primario-oscuro leading-tight max-w-[16rem]">
-              {{ colegio.nombre }}
-            </p>
-          </div>
+      <!-- foto: ocupa toda la mitad derecha. En pantallas chicas queda debajo del texto -->
+      <div class="relative min-h-72 md:min-h-[30rem]">
+        <img src="bienvenida.jpg" alt="Una madre lleva de la mano a su hijo hacia la entrada de la escuela"
+          class="absolute inset-0 h-full w-full object-cover object-[center_70%]" />
+
+        <!-- degradado verde arriba: hace resaltar el cuadro blanco y suaviza el rótulo del edificio -->
+        <div class="absolute inset-x-0 top-0 h-2/5"
+          style="background-image: linear-gradient(to bottom, rgba(31,74,66,0.85), rgba(31,74,66,0.4) 55%, transparent)"></div>
+        <!-- cuadro blanco, opaco, con el logo original y el nombre -->
+        <div class="absolute top-6 right-6 flex items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-2xl">
+          <img src="logo.svg" alt="" class="h-14 md:h-20 w-auto" />
+          <p class="font-titulo text-xl md:text-2xl font-bold text-primario-oscuro leading-tight max-w-[10rem]">
+            {{ colegio.nombre }}
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- Niveles educativos -->
-    <section class="max-w-6xl mx-auto px-6 py-14">
+    <!-- Niveles educativos: un icono por nivel, en el orden en que estan en colegio.ts -->
+    <section class="max-w-6xl mx-auto px-6 py-12">
       <h2 class="text-2xl font-semibold">Niveles educativos</h2>
       <p class="text-sm text-gray-500 mt-1">Acompañamos a cada estudiante en todas sus etapas.</p>
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
         @for (nivel of colegio.niveles; track nivel.nombre) {
-          <article class="bg-white rounded-xl shadow-sm border-t-4 border-primario p-5">
-            <h3 class="font-semibold text-primario-oscuro">{{ nivel.nombre }}</h3>
+          <article class="bg-white rounded-xl shadow-sm border-t-4 border-primario p-5 hover:shadow-md hover:-translate-y-0.5 transition">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primario-claro text-primario-oscuro text-xl">
+              <i [class]="'bi bi-' + ['emoji-smile', 'book', 'lightbulb', 'mortarboard'][$index]"></i>
+            </span>
+            <h3 class="font-semibold text-primario-oscuro mt-3">{{ nivel.nombre }}</h3>
             <p class="text-sm mt-2">{{ nivel.detalle }}</p>
           </article>
         }
@@ -59,19 +63,28 @@
 
     <!-- Contacto -->
     <section class="bg-primario-claro">
-      <div class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
-        <div>
-          <h3 class="font-semibold text-primario-oscuro">Dirección</h3>
-          <p class="text-sm mt-2">{{ colegio.direccion }}</p>
+      <div class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8">
+        <div class="flex gap-3">
+          <i class="bi bi-geo-alt text-2xl text-primario"></i>
+          <div>
+            <h3 class="font-semibold text-primario-oscuro">Dirección</h3>
+            <p class="text-sm mt-2">{{ colegio.direccion }}</p>
+          </div>
         </div>
-        <div>
-          <h3 class="font-semibold text-primario-oscuro">Contacto</h3>
-          <p class="text-sm mt-2">Tel. {{ colegio.telefono }}</p>
-          <p class="text-sm">{{ colegio.correo }}</p>
+        <div class="flex gap-3">
+          <i class="bi bi-telephone text-2xl text-primario"></i>
+          <div>
+            <h3 class="font-semibold text-primario-oscuro">Contacto</h3>
+            <p class="text-sm mt-2">Tel. {{ colegio.telefono }}</p>
+            <p class="text-sm">{{ colegio.correo }}</p>
+          </div>
         </div>
-        <div>
-          <h3 class="font-semibold text-primario-oscuro">Horario de atención</h3>
-          <p class="text-sm mt-2">{{ colegio.horario }}</p>
+        <div class="flex gap-3">
+          <i class="bi bi-clock text-2xl text-primario"></i>
+          <div>
+            <h3 class="font-semibold text-primario-oscuro">Horario de atención</h3>
+            <p class="text-sm mt-2">{{ colegio.horario }}</p>
+          </div>
         </div>
       </div>
     </section>

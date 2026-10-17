@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
-import { OpcionMenu, opcionesPorRol } from '../../menu';
+import { gruposPorRol } from '../../menu';
 
 /**
  * Marco comun de todas las pantallas con sesion: menu lateral, barra superior y pie
@@ -19,8 +19,8 @@ export class Marco {
   protected readonly sesion = this.autenticacion.obtenerSesion();
   protected readonly anio = new Date().getFullYear();
 
-  //el menu depende del rol; se ira completando con los demas roles
-  protected readonly menu: OpcionMenu[] = opcionesPorRol(this.sesion?.rol);
+  //el menu depende del rol y se muestra en grupos: Configuracion, Personal, Academico...
+  protected readonly grupos = gruposPorRol(this.sesion?.rol);
 
   protected cerrarSesion(): void {
     this.autenticacion.cerrarSesion();
@@ -35,4 +35,4 @@ export class Marco {
       .map((p) => p[0].toUpperCase())
       .join('');
   }
-  }
+}
