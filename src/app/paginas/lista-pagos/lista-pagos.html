@@ -1,0 +1,100 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Pagos</h2>
+  <p class="text-sm text-gray-500">Inscripciones y mensualidades cobradas. El monto se copia de la tarifa al cobrar.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" (click)="cobrando.set('INSCRIPCION')"
+        class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">Cobrar inscripción</button>
+      <button type="button" (click)="cobrando.set('MENSUALIDAD')"
+        class="rounded-lg bg-primario-oscuro text-white text-sm px-3 py-2 hover:bg-primario">Cobrar mensualidad</button>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 mb-4">
+    <select (change)="alCambiarEstudiante($any($event.target).value)"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+      <option value="">Todos los estudiantes</option>
+      @for (e of estudiantes(); track e.idUsuario) {
+        <option [value]="e.idUsuario">{{ e.nombre }}</option>
+      }
+    </select>
+    <select (change)="alCambiarConcepto($any($event.target).value)"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+      <option value="">Todos los conceptos</option>
+      <option value="INSCRIPCION">Inscripción</option>
+      <option value="MENSUALIDAD">Mensualidad</option>
+      <option value="ACTIVIDAD">Actividad</option>
+      <option value="MULTA">Multa</option>
+    </select>
+    <label class="flex items-center gap-2 text-sm text-texto">Desde
+      <input type="date" (change)="alCambiarDesde($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+    </label>
+    <label class="flex items-center gap-2 text-sm text-texto">Hasta
+      <input type="date" (change)="alCambiarHasta($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+    </label>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Estudiante</th>
+          <th class="px-3 py-2">Concepto</th>
+          <th class="px-3 py-2">Monto</th>
+          <th class="px-3 py-2">Fecha</th>
+          <th class="px-3 py-2">Registró</th>
+          <th class="px-3 py-2">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of pagos(); track p.idPago) {
+          <tr class="border-b border-gray-100" [class.opacity-60]="p.estado === 'ANULADO'">
+            <td class="px-3 py-2 font-medium">{{ p.estudianteNombre }}</td>
+            <td class="px-3 py-2">
+              {{ descripcionPago(p) }}
+              <span class="block text-xs text-gray-500">{{ p.anioNombre }}</span>
+            </td>
+            <td class="px-3 py-2 font-medium">{{ p.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</td>
+            <td class="px-3 py-2">{{ p.fecha }}</td>
+            <td class="px-3 py-2">{{ p.secretariaNombre }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-primario-claro]="p.estado === 'VIGENTE'" [class.text-primario-oscuro]="p.estado === 'VIGENTE'"
+                [class.bg-gray-200]="p.estado !== 'VIGENTE'" [class.text-gray-600]="p.estado !== 'VIGENTE'">
+                {{ p.estado === 'VIGENTE' ? 'Vigente' : 'Anulado' }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron pagos' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+@if (cobrando(); as t) {
+  <app-formulario-pago [tipo]="t" (guardado)="alGuardar()" (cancelado)="cobrando.set(null)" />
+}

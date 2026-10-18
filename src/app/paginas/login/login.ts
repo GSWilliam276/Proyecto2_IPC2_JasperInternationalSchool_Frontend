@@ -73,11 +73,11 @@ export class Login {
   private rutaPorRol(rol: string): string {
     switch (rol) {
       case 'SUPERADMIN':
-        return '/inicio';
       case 'ADMIN':
+      case 'SECRETARIA':
         return '/inicio';
       default:
-        return '/sin-acceso'; //los demas paneles todavia no existen por el momento
+        return '/sin-acceso'; //Bibliotecario, Maestro y Estudiante: sus paneles todavia no existen
     }
   }
 }

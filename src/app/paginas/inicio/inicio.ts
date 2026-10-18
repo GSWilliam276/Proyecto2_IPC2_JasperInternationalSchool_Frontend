@@ -3,6 +3,7 @@ import { opcionesPorRol } from '../../menu';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { AniosLectivos, AnioLectivoResumen } from '../../servicios/anios-lectivos';
+import { gruposPorRol } from '../../menu';
 
 /** Pantalla de inicio: saludo y una tarjeta por cada modulo que el rol puede usar */
 @Component({
@@ -17,6 +18,7 @@ export class Inicio {
   protected readonly anioCargado = signal(false);
 
   protected readonly sesion = this.autenticacion.obtenerSesion();
+  protected readonly grupos = gruposPorRol(this.sesion?.rol);
   protected readonly opciones = opcionesPorRol(this.sesion?.rol);
   protected readonly saludo = this.calcularSaludo();
   protected readonly fecha = new Date().toLocaleDateString('es-GT', {

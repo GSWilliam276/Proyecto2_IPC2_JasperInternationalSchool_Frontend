@@ -1,0 +1,66 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
+    class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
+    <h4 class="text-lg font-semibold text-texto">Inscribir estudiante</h4>
+    <p class="text-sm text-gray-500">La inscripción se hace en una sección del año lectivo activo.</p>
+
+    <div>
+      <label for="idEstudiante" class="block text-sm font-medium text-texto mb-1">Estudiante</label>
+      <select id="idEstudiante" formControlName="idEstudiante"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option [ngValue]="null" disabled>Seleccione un estudiante</option>
+        @for (e of estudiantes(); track e.idUsuario) {
+          <option [ngValue]="e.idUsuario">{{ e.nombre }} · {{ e.cui }}</option>
+        }
+      </select>
+      @if (formulario.controls.idEstudiante.touched && formulario.controls.idEstudiante.invalid) {
+        <p class="text-sm text-acento mt-1">Seleccione un estudiante</p>
+      }
+    </div>
+
+    <div>
+      <label for="idSeccion" class="block text-sm font-medium text-texto mb-1">Sección</label>
+      <select id="idSeccion" formControlName="idSeccion"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option [ngValue]="null" disabled>Seleccione una sección</option>
+        @for (s of secciones(); track s.idSeccion) {
+          <option [ngValue]="s.idSeccion">
+            {{ s.gradoNombre }} · {{ s.nombre }} ({{ s.inscritos }}/{{ s.cupoMaximo }})
+          </option>
+        }
+      </select>
+      @if (formulario.controls.idSeccion.touched && formulario.controls.idSeccion.invalid) {
+        <p class="text-sm text-acento mt-1">Seleccione una sección</p>
+      }
+    </div>
+
+    @if (sinAcceso()) {
+      <div>
+        <label for="correo" class="block text-sm font-medium text-texto mb-1">Correo del estudiante</label>
+        <input id="correo" type="email" formControlName="correo"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+        @if (formulario.controls.correo.touched && formulario.controls.correo.invalid) {
+          <p class="text-sm text-acento mt-1">Ingrese un correo válido</p>
+        }
+        <p class="text-xs text-gray-500 mt-1">
+          Todavía no tiene acceso: el sistema genera su contraseña provisional y se muestra una sola vez.
+        </p>
+      </div>
+    } @else if (elegido()) {
+      <p class="text-xs text-gray-500">Ya tiene acceso al sistema: es una reinscripción y no se crea una cuenta nueva.</p>
+    }
+
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" (click)="cancelar()" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+      <button type="submit" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+        {{ guardando() ? 'Inscribiendo...' : 'Inscribir' }}
+      </button>
+    </div>
+  </form>
+</div>

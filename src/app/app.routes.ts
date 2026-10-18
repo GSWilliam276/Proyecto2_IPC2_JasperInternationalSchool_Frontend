@@ -22,6 +22,8 @@ import { ListaTarifas } from './paginas/lista-tarifas/lista-tarifas';
 import { ListaActividades } from './paginas/lista-actividades/lista-actividades';
 import { ListaAsignaciones } from './paginas/lista-asignaciones/lista-asignaciones';
 import { ListaEstudiantes } from './paginas/lista-estudiantes/lista-estudiantes';
+import { ListaInscripciones } from './paginas/lista-inscripciones/lista-inscripciones';
+import { ListaPagos } from './paginas/lista-pagos/lista-pagos';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -124,6 +126,18 @@ export const routes: Routes = [
         component: ListaEstudiantes,
         canActivate: [rolGuard],
         data: { roles: ['ADMIN', 'SUPERADMIN'] },
+      },
+            {
+        path: 'inscripciones',
+        component: ListaInscripciones,
+        canActivate: [rolGuard],
+        data: { roles: ['SECRETARIA'] },
+      },
+      {
+        path: 'pagos',
+        component: ListaPagos,
+        canActivate: [rolGuard],
+        data: { roles: ['SECRETARIA'] },
       },
     ],
   },
