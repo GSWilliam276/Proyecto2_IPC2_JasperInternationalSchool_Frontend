@@ -1,0 +1,53 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
+    class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
+    <h4 class="text-lg font-semibold text-texto">{{ esEdicion() ? 'Editar libro' : 'Registrar libro' }}</h4>
+
+    <div>
+      <label for="titulo" class="block text-sm font-medium text-texto mb-1">Título</label>
+      <input id="titulo" type="text" formControlName="titulo"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      @if (formulario.controls.titulo.touched && formulario.controls.titulo.invalid) {
+        <p class="text-sm text-acento mt-1">El título es obligatorio (máximo 150 caracteres)</p>
+      }
+    </div>
+    <div>
+      <label for="autor" class="block text-sm font-medium text-texto mb-1">Autor</label>
+      <input id="autor" type="text" formControlName="autor"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+      @if (formulario.controls.autor.touched && formulario.controls.autor.invalid) {
+        <p class="text-sm text-acento mt-1">El autor es obligatorio (máximo 100 caracteres)</p>
+      }
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label for="editorial" class="block text-sm font-medium text-texto mb-1">Editorial</label>
+        <input id="editorial" type="text" formControlName="editorial"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+        @if (formulario.controls.editorial.touched && formulario.controls.editorial.invalid) {
+          <p class="text-sm text-acento mt-1">Obligatoria (máximo 100)</p>
+        }
+      </div>
+      <div>
+        <label for="ejemplares" class="block text-sm font-medium text-texto mb-1">Ejemplares</label>
+        <input id="ejemplares" type="number" step="1" formControlName="ejemplares"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+        @if (formulario.controls.ejemplares.touched && formulario.controls.ejemplares.invalid) {
+          <p class="text-sm text-acento mt-1">{{ avisoEjemplares() }}</p>
+        }
+      </div>
+    </div>
+
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" (click)="cancelar()" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+      <button type="submit" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+        {{ guardando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+    </div>
+  </form>
+</div>

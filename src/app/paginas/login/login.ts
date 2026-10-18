@@ -75,9 +75,10 @@ export class Login {
       case 'SUPERADMIN':
       case 'ADMIN':
       case 'SECRETARIA':
+      case 'BIBLIOTECARIO':
         return '/inicio';
       default:
-        return '/sin-acceso'; //Bibliotecario, Maestro y Estudiante: sus paneles todavia no existen
+        return '/sin-acceso'; //Maestro y Estudiante: sus paneles todavia no existen
     }
   }
 }
