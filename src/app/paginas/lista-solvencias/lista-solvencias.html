@@ -1,0 +1,86 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Solvencias</h2>
+  <p class="text-sm text-gray-500">
+    Un estudiante está solvente si pagó la inscripción y las mensualidades vencidas (se exigen pasado el día 10 de cada mes).
+  </p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <label for="estudiante" class="block text-sm font-medium text-texto mb-1">Estudiante</label>
+  <select id="estudiante" (change)="alElegir($any($event.target).value)"
+    class="w-full max-w-md rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+    <option value="">Todos (solo historial)</option>
+    @for (e of estudiantes(); track e.idUsuario) {
+      <option [value]="e.idUsuario">{{ e.nombre }} · {{ e.cui }}</option>
+    }
+  </select>
+
+  @if (cargando()) {
+    <p class="text-sm text-gray-500 mt-4">Calculando saldo...</p>
+  }
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mt-4">{{ error() }}</p>
+  }
+  @if (exito()) {
+    <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2 mt-4">
+      <i class="bi bi-check-circle"></i> {{ exito() }}
+    </p>
+  }
+
+  @if (saldo(); as s) {
+    <div class="mt-4 rounded-xl border p-4"
+      [class.border-primario]="s.solvente" [class.bg-primario-claro]="s.solvente"
+      [class.border-acento]="!s.solvente" [class.bg-red-50]="!s.solvente">
+      @if (s.solvente) {
+        <p class="font-semibold text-primario-oscuro"><i class="bi bi-patch-check"></i> Solvente en {{ s.anioNombre }}</p>
+        <p class="text-sm mt-1">No tiene pagos pendientes.</p>
+      } @else {
+        <p class="font-semibold text-acento"><i class="bi bi-exclamation-triangle"></i> Saldo pendiente en {{ s.anioNombre }}</p>
+        <p class="text-2xl font-bold text-texto mt-1">{{ s.saldo | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</p>
+        <ul class="text-sm mt-2 list-disc list-inside">
+          @if (s.inscripcionPendiente) {
+            <li>Inscripción sin pagar</li>
+          }
+          @if (s.mesesPendientes.length > 0) {
+            <li>Mensualidades vencidas: {{ s.mesesPendientes.map(nombreMes).join(', ') }}</li>
+          }
+        </ul>
+      }
+      <button type="button" (click)="generar()" [disabled]="!s.solvente || emitiendo()"
+        class="mt-4 rounded-lg bg-primario text-white text-sm px-4 py-2 hover:bg-primario-oscuro disabled:opacity-40">
+        {{ emitiendo() ? 'Generando...' : 'Generar solvencia' }}
+      </button>
+    </div>
+  }
+</section>
+
+<section class="bg-white rounded-xl shadow-md p-6 mt-6">
+  <h3 class="text-lg font-semibold text-texto mb-3">Solvencias emitidas</h3>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">N.º</th>
+          <th class="px-3 py-2">Estudiante</th>
+          <th class="px-3 py-2">Año lectivo</th>
+          <th class="px-3 py-2">Emitida</th>
+          <th class="px-3 py-2">Por</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of solvencias(); track v.idSolvencia) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">{{ v.idSolvencia }}</td>
+            <td class="px-3 py-2 font-medium">{{ v.estudianteNombre }}</td>
+            <td class="px-3 py-2">{{ v.anioNombre }}</td>
+            <td class="px-3 py-2">{{ fechaHora(v.fechaEmision) }}</td>
+            <td class="px-3 py-2">{{ v.secretariaNombre }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="5" class="px-3 py-6 text-center text-gray-500">No hay solvencias emitidas</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

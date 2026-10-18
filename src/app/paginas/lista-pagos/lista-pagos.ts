@@ -1,10 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { EstudianteResumen, Estudiantes } from '../../servicios/estudiantes';
-import { PagoResumen, Pagos, descripcionPago } from '../../servicios/pagos';
+import { ComprobanteResumen, PagoResumen, Pagos, descripcionPago } from '../../servicios/pagos';
 import { FormularioPago } from '../formulario-pago/formulario-pago';
 
-/** Listado de pagos con filtros, y cobro de inscripcion y mensualidad */
+/** Listado de pagos con filtros, cobro de inscripcion, mensualidad y actividad, anulacion y comprobantes */
 @Component({
   selector: 'app-lista-pagos',
   imports: [FormularioPago, CurrencyPipe],
@@ -27,7 +27,16 @@ export class ListaPagos implements OnInit {
   protected readonly desde = signal('');
   protected readonly hasta = signal('');
 
-  protected readonly cobrando = signal<'INSCRIPCION' | 'MENSUALIDAD' | null>(null);
+  protected readonly cobrando = signal<'INSCRIPCION' | 'MENSUALIDAD' | 'ACTIVIDAD' | null>(null);
+
+  //Anular con motivo
+  protected readonly anulando = signal<PagoResumen | null>(null);
+  protected readonly motivo = signal('');
+  protected readonly procesando = signal(false);
+  protected readonly errorAnular = signal('');
+
+  //Comprobante
+  protected readonly comprobante = signal<ComprobanteResumen | null>(null);
 
   protected readonly hayMas = computed(() => this.pagos().length === this.tamano);
 
@@ -96,5 +105,61 @@ export class ListaPagos implements OnInit {
     this.cobrando.set(null);
     this.pagina.set(1);
     this.cargar();
+  }
+
+  //Anular (CU067) 
+
+  protected pedirAnular(pago: PagoResumen): void {
+    this.motivo.set('');
+    this.errorAnular.set('');
+    this.anulando.set(pago);
+  }
+
+  protected confirmarAnular(): void {
+    const pago = this.anulando();
+    const motivo = this.motivo().trim();
+    if (!pago) {
+      return;
+    }
+    if (!motivo) {
+      this.errorAnular.set('El motivo es obligatorio');
+      return;
+    }
+    this.procesando.set(true);
+    this.errorAnular.set('');
+    this.servicio.anular(pago.idPago, motivo).subscribe({
+      next: () => {
+        this.procesando.set(false);
+        this.anulando.set(null);
+        this.cargar();
+      },
+      error: (e) => {
+        this.procesando.set(false);
+        this.errorAnular.set(e.error?.mensaje ?? 'No se pudo anular el pago');
+      },
+    });
+  }
+
+  //Comprobante (CU068): si el pago ya tiene uno se muestra, y si no, se emite 
+
+  protected verComprobante(pago: PagoResumen): void {
+    this.error.set('');
+    this.servicio.consultarComprobante(pago.idPago).subscribe({
+      next: (c) => this.comprobante.set(c),
+      error: (e) => {
+        if (e.status === 404) {
+          this.servicio.emitirComprobante(pago.idPago).subscribe({
+            next: (c) => this.comprobante.set(c),
+            error: (e2) => this.error.set(e2.error?.mensaje ?? 'No se pudo emitir el comprobante'),
+          });
+        } else {
+          this.error.set(e.error?.mensaje ?? 'No se pudo consultar el comprobante');
+        }
+      },
+    });
+  }
+
+  protected fechaHora(texto: string): string {
+    return texto.replace('T', ' ');
   }
 }

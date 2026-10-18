@@ -24,6 +24,7 @@ import { ListaAsignaciones } from './paginas/lista-asignaciones/lista-asignacion
 import { ListaEstudiantes } from './paginas/lista-estudiantes/lista-estudiantes';
 import { ListaInscripciones } from './paginas/lista-inscripciones/lista-inscripciones';
 import { ListaPagos } from './paginas/lista-pagos/lista-pagos';
+import { ListaSolvencias } from './paginas/lista-solvencias/lista-solvencias';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -136,6 +137,12 @@ export const routes: Routes = [
       {
         path: 'pagos',
         component: ListaPagos,
+        canActivate: [rolGuard],
+        data: { roles: ['SECRETARIA'] },
+      },
+      {
+        path: 'solvencias',
+        component: ListaSolvencias,
         canActivate: [rolGuard],
         data: { roles: ['SECRETARIA'] },
       },

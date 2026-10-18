@@ -1,6 +1,6 @@
 <div class="mb-4">
   <h2 class="text-xl font-semibold text-texto">Pagos</h2>
-  <p class="text-sm text-gray-500">Inscripciones y mensualidades cobradas. El monto se copia de la tarifa al cobrar.</p>
+  <p class="text-sm text-gray-500">Inscripciones, mensualidades y actividades cobradas. El monto se copia de la tarifa al cobrar.</p>
 </div>
 
 <section class="bg-white rounded-xl shadow-md p-6">
@@ -11,6 +11,8 @@
         class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">Cobrar inscripción</button>
       <button type="button" (click)="cobrando.set('MENSUALIDAD')"
         class="rounded-lg bg-primario-oscuro text-white text-sm px-3 py-2 hover:bg-primario">Cobrar mensualidad</button>
+      <button type="button" (click)="cobrando.set('ACTIVIDAD')"
+        class="rounded-lg bg-acento text-white text-sm px-3 py-2 hover:opacity-90">Cobrar actividad</button>
     </div>
   </div>
 
@@ -54,6 +56,7 @@
           <th class="px-3 py-2">Fecha</th>
           <th class="px-3 py-2">Registró</th>
           <th class="px-3 py-2">Estado</th>
+          <th class="px-3 py-2">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -73,11 +76,28 @@
                 [class.bg-gray-200]="p.estado !== 'VIGENTE'" [class.text-gray-600]="p.estado !== 'VIGENTE'">
                 {{ p.estado === 'VIGENTE' ? 'Vigente' : 'Anulado' }}
               </span>
+              @if (p.motivoAnulacion) {
+                <span class="block text-xs text-gray-500 mt-1">{{ p.motivoAnulacion }}</span>
+              }
+            </td>
+            <td class="px-3 py-2">
+              @if (p.estado === 'VIGENTE') {
+                <div class="flex gap-2">
+                  <button type="button" (click)="verComprobante(p)"
+                    class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">
+                    Comprobante
+                  </button>
+                  <button type="button" (click)="pedirAnular(p)"
+                    class="text-xs rounded-lg px-3 py-1 border border-acento text-acento hover:bg-red-50">
+                    Anular
+                  </button>
+                </div>
+              }
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+            <td colspan="7" class="px-3 py-6 text-center text-gray-500">
               {{ cargando() ? 'Cargando...' : 'No se encontraron pagos' }}
             </td>
           </tr>
@@ -97,4 +117,63 @@
 
 @if (cobrando(); as t) {
   <app-formulario-pago [tipo]="t" (guardado)="alGuardar()" (cancelado)="cobrando.set(null)" />
+}
+
+<!-- Anular con motivo obligatorio -->
+@if (anulando(); as p) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Anular pago</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Desea anular <strong>{{ descripcionPago(p) }}</strong> de <strong>{{ p.estudianteNombre }}</strong>
+        ({{ p.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }})?
+      </p>
+      <label for="motivo" class="block text-sm font-medium text-texto mt-3 mb-1">Motivo</label>
+      <textarea id="motivo" rows="2" maxlength="255" (input)="motivo.set($any($event.target).value)"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario"></textarea>
+      <p class="text-xs text-gray-500 mt-1">
+        El pago no se elimina: queda como anulado, deja de contar en saldos e ingresos y su comprobante se anula también.
+      </p>
+      @if (errorAnular()) {
+        <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mt-2">{{ errorAnular() }}</p>
+      }
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="anulando.set(null)" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmarAnular()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-acento text-white disabled:opacity-60">
+          {{ procesando() ? 'Anulando...' : 'Anular pago' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Comprobante -->
+@if (comprobante(); as c) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <div class="flex items-center justify-between">
+        <h4 class="text-lg font-semibold text-texto">Comprobante {{ c.numero }}</h4>
+        <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+          [class.bg-primario-claro]="c.estado === 'EMITIDO'" [class.text-primario-oscuro]="c.estado === 'EMITIDO'"
+          [class.bg-gray-200]="c.estado !== 'EMITIDO'" [class.text-gray-600]="c.estado !== 'EMITIDO'">
+          {{ c.estado === 'EMITIDO' ? 'Emitido' : 'Anulado' }}
+        </span>
+      </div>
+      <dl class="mt-4 space-y-2 text-sm">
+        <div><dt class="text-gray-500">Estudiante</dt><dd class="font-medium">{{ c.pago.estudianteNombre }}</dd></div>
+        <div><dt class="text-gray-500">Concepto</dt><dd>{{ descripcionPago(c.pago) }} · {{ c.pago.anioNombre }}</dd></div>
+        <div><dt class="text-gray-500">Monto</dt>
+          <dd class="text-lg font-semibold text-primario-oscuro">{{ c.pago.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</dd></div>
+        <div><dt class="text-gray-500">Fecha del pago</dt><dd>{{ c.pago.fecha }}</dd></div>
+        <div><dt class="text-gray-500">Registró</dt><dd>{{ c.pago.secretariaNombre }}</dd></div>
+        <div><dt class="text-gray-500">Emitido</dt><dd>{{ fechaHora(c.fechaEmision) }}</dd></div>
+      </dl>
+      <div class="flex justify-end mt-5">
+        <button type="button" (click)="comprobante.set(null)"
+          class="px-3 py-1 rounded-lg bg-primario text-white">Cerrar</button>
+      </div>
+    </div>
+  </div>
 }

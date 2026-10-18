@@ -19,6 +19,14 @@ export interface PagoResumen {
   motivoAnulacion: string | null;
 }
 
+export interface ComprobanteResumen {
+  idComprobante: number;
+  numero: string;
+  fechaEmision: string;
+  estado: string;
+  pago: PagoResumen;
+}
+
 export const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
   'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -66,5 +74,22 @@ export class Pagos {
 
   pagarMensualidad(idEstudiante: number, meses: number[]): Observable<PagoResumen[]> {
     return this.http.post<PagoResumen[]>(`${this.url}/mensualidad`, { idEstudiante, meses });
+  }
+
+    pagarActividad(idEstudiante: number, idActividad: number): Observable<PagoResumen> {
+    return this.http.post<PagoResumen>(`${this.url}/actividad`, { idEstudiante, idActividad });
+  }
+
+  anular(id: number, motivo: string): Observable<void> {
+    return this.http.put<void>(`${this.url}/${id}/anular`, { motivo });
+  }
+
+  emitirComprobante(id: number): Observable<ComprobanteResumen> {
+    return this.http.post<ComprobanteResumen>(`${this.url}/${id}/comprobante`, null);
+  }
+
+  /** 404 si el pago todavia no tiene comprobante */
+  consultarComprobante(id: number): Observable<ComprobanteResumen> {
+    return this.http.get<ComprobanteResumen>(`${this.url}/${id}/comprobante`);
   }
 }

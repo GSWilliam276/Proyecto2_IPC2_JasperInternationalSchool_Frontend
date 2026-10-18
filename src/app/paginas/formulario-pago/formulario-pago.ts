@@ -1,11 +1,12 @@
 import { Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { ActividadResumen, Actividades, fechaDeHoy, formatearFecha } from '../../servicios/actividades';
 import { AniosLectivos } from '../../servicios/anios-lectivos';
 import { EstudianteResumen, Estudiantes } from '../../servicios/estudiantes';
 import { MESES, Pagos } from '../../servicios/pagos';
-import { Observable } from 'rxjs';
 
-/** Formulario (en modal) para cobrar la inscripcion (CU062) o una o varias mensualidades (CU063) */
+/** Formulario (en modal) para cobrar inscripcion (CU062), mensualidades (CU063) o una actividad (CU064)*/
 @Component({
   selector: 'app-formulario-pago',
   imports: [ReactiveFormsModule],
@@ -16,21 +17,36 @@ export class FormularioPago implements OnInit {
   private readonly servicio = inject(Pagos);
   private readonly estudiantesServicio = inject(Estudiantes);
   private readonly aniosServicio = inject(AniosLectivos);
+  private readonly actividadesServicio = inject(Actividades);
 
-  readonly tipo = input.required<'INSCRIPCION' | 'MENSUALIDAD'>();
+  readonly tipo = input.required<'INSCRIPCION' | 'MENSUALIDAD' | 'ACTIVIDAD'>();
   readonly guardado = output<void>();
   readonly cancelado = output<void>();
 
   protected readonly estudiantes = signal<EstudianteResumen[]>([]);
+  protected readonly actividades = signal<ActividadResumen[]>([]);
   protected readonly mesesDisponibles = signal<number[]>([]);
   protected readonly mesesElegidos = signal<number[]>([]);
   protected readonly guardando = signal(false);
   protected readonly error = signal('');
+  protected readonly formatearFecha = formatearFecha;
   protected readonly nombreMes = (m: number) => MESES[m - 1].charAt(0).toUpperCase() + MESES[m - 1].slice(1);
 
   protected readonly formulario = this.fb.group({
     idEstudiante: this.fb.control<number | null>(null, Validators.required),
+    idActividad: this.fb.control<number | null>(null),
   });
+
+  protected titulo(): string {
+    switch (this.tipo()) {
+      case 'INSCRIPCION':
+        return 'Cobrar inscripción';
+      case 'MENSUALIDAD':
+        return 'Cobrar mensualidad';
+      default:
+        return 'Cobrar actividad';
+    }
+  }
 
   ngOnInit(): void {
     this.estudiantesServicio.listar(1, 100, '', 'ACTIVO').subscribe({
@@ -54,6 +70,15 @@ export class FormularioPago implements OnInit {
         },
       });
     }
+    if (this.tipo() === 'ACTIVIDAD') {
+      this.formulario.controls.idActividad.addValidators(Validators.required);
+      this.formulario.controls.idActividad.updateValueAndValidity();
+      //Solo actividades activas que todavia no pasaron
+      this.actividadesServicio.listar(1, 100, '', true).subscribe({
+        next: (l) => this.actividades.set(l.filter((a) => a.fecha >= fechaDeHoy())),
+        error: (e) => this.error.set(e.error?.mensaje ?? 'No se pudieron cargar las actividades'),
+      });
+    }
   }
 
   protected alternarMes(mes: number): void {
@@ -65,9 +90,10 @@ export class FormularioPago implements OnInit {
   }
 
   protected guardar(): void {
-    if (this.formulario.invalid || (this.tipo() === 'MENSUALIDAD' && this.mesesElegidos().length === 0)) {
+    const sinMeses = this.tipo() === 'MENSUALIDAD' && this.mesesElegidos().length === 0;
+    if (this.formulario.invalid || sinMeses) {
       this.formulario.markAllAsTouched();
-      if (this.tipo() === 'MENSUALIDAD' && this.mesesElegidos().length === 0) {
+      if (sinMeses) {
         this.error.set('Seleccione al menos un mes');
       }
       return;
@@ -75,9 +101,14 @@ export class FormularioPago implements OnInit {
     this.guardando.set(true);
     this.error.set('');
     const id = this.formulario.controls.idEstudiante.value as number;
-    const peticion: Observable<unknown> = this.tipo() === 'INSCRIPCION'
-      ? this.servicio.pagarInscripcion(id)
-      : this.servicio.pagarMensualidad(id, this.mesesElegidos());
+    let peticion: Observable<unknown>;
+    if (this.tipo() === 'INSCRIPCION') {
+      peticion = this.servicio.pagarInscripcion(id);
+    } else if (this.tipo() === 'MENSUALIDAD') {
+      peticion = this.servicio.pagarMensualidad(id, this.mesesElegidos());
+    } else {
+      peticion = this.servicio.pagarActividad(id, this.formulario.controls.idActividad.value as number);
+    }
     peticion.subscribe({
       next: () => {
         this.guardando.set(false);
@@ -85,7 +116,7 @@ export class FormularioPago implements OnInit {
       },
       error: (e) => {
         this.guardando.set(false);
-        //Aqui llegan los 409: ya pagado, sin tarifa, no inscrito...
+        //Aqui llegan los 409: ya pagado, sin cupo, sin tarifa, no inscrito
         this.error.set(e.error?.mensaje ?? 'No se pudo registrar el pago');
       },
     });

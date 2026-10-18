@@ -1,11 +1,13 @@
 <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
   <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
     class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
-    <h4 class="text-lg font-semibold text-texto">
-      {{ tipo() === 'INSCRIPCION' ? 'Cobrar inscripción' : 'Cobrar mensualidad' }}
-    </h4>
+    <h4 class="text-lg font-semibold text-texto">{{ titulo() }}</h4>
     <p class="text-sm text-gray-500">
-      El monto sale de la tarifa del grado del estudiante en el año lectivo activo.
+      @if (tipo() === 'ACTIVIDAD') {
+        Pagar es inscribirse: el monto es el costo de la actividad (cero si es gratuita).
+      } @else {
+        El monto sale de la tarifa del grado del estudiante en el año lectivo activo.
+      }
     </p>
 
     <div>
@@ -21,6 +23,27 @@
         <p class="text-sm text-acento mt-1">Seleccione un estudiante</p>
       }
     </div>
+
+    @if (tipo() === 'ACTIVIDAD') {
+      <div>
+        <label for="idActividad" class="block text-sm font-medium text-texto mb-1">Actividad</label>
+        <select id="idActividad" formControlName="idActividad"
+          class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+          <option [ngValue]="null" disabled>Seleccione una actividad</option>
+          @for (a of actividades(); track a.idActividad) {
+            <option [ngValue]="a.idActividad">
+              {{ a.nombre }} · {{ formatearFecha(a.fecha) }} · {{ a.gratuita ? 'Gratuita' : 'Q' + a.costo.toFixed(2) }}
+            </option>
+          }
+        </select>
+        @if (formulario.controls.idActividad.touched && formulario.controls.idActividad.invalid) {
+          <p class="text-sm text-acento mt-1">Seleccione una actividad</p>
+        }
+        @if (actividades().length === 0) {
+          <p class="text-xs text-gray-500 mt-1">No hay actividades activas próximas.</p>
+        }
+      </div>
+    }
 
     @if (tipo() === 'MENSUALIDAD') {
       <div>
