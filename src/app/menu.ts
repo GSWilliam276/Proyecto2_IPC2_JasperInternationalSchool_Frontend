@@ -31,6 +31,8 @@ const INSCRIPCIONES: OpcionMenu = { ruta: '/inscripciones', etiqueta: 'Inscripci
 const PAGOS: OpcionMenu = { ruta: '/pagos', etiqueta: 'Pagos', icono: 'receipt' };
 const SOLVENCIAS: OpcionMenu = { ruta: '/solvencias', etiqueta: 'Solvencias', icono: 'patch-check' };
 const LIBROS: OpcionMenu = { ruta: '/libros', etiqueta: 'Libros', icono: 'book-half' };
+const PRESTAMOS: OpcionMenu = { ruta: '/prestamos', etiqueta: 'Préstamos', icono: 'arrow-left-right' };
+const MULTAS: OpcionMenu = { ruta: '/multas', etiqueta: 'Multas', icono: 'exclamation-diamond' };
 
 //Grupos que comparten Admin y SuperAdmin
 
@@ -55,9 +57,12 @@ export function gruposPorRol(rol: string | undefined): GrupoMenu[] {
     case 'ADMIN':
       return [{ titulo: 'Personal', opciones: [EMPLEADOS] }, ACADEMICO, FINANZAS, BIBLIOTECA];
     case 'SECRETARIA':
-      return [{ titulo: 'Secretaría', opciones: [INSCRIPCIONES, PAGOS, SOLVENCIAS] }];
+      return [
+        { titulo: 'Secretaría', opciones: [INSCRIPCIONES, PAGOS, SOLVENCIAS] },
+        { titulo: 'Biblioteca', opciones: [MULTAS] },
+      ];
     case 'BIBLIOTECARIO':
-      return [{ titulo: 'Biblioteca', opciones: [LIBROS] }];
+      return [{ titulo: 'Biblioteca', opciones: [LIBROS, PRESTAMOS, MULTAS] }];
     default:
       return [];
   }

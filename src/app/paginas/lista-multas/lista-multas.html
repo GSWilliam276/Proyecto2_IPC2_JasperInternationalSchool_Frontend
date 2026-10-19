@@ -1,0 +1,102 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Multas</h2>
+  <p class="text-sm text-gray-500">
+    Multas por devoluciones tardías de estudiantes. El monto se copia al generarse.
+    @if (puedeCobrar) { Puede cobrar las pendientes desde aquí. }
+  </p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <select (change)="alCambiarEstado($any($event.target).value)"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+      <option value="">Todas</option>
+      <option value="PENDIENTE">Pendientes</option>
+      <option value="PAGADA">Pagadas</option>
+    </select>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Estudiante</th>
+          <th class="px-3 py-2">Libro</th>
+          <th class="px-3 py-2">Atraso</th>
+          <th class="px-3 py-2">Monto</th>
+          <th class="px-3 py-2">Generada</th>
+          <th class="px-3 py-2">Estado</th>
+          @if (puedeCobrar) {
+            <th class="px-3 py-2">Acciones</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of multas(); track m.idMulta) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 font-medium">{{ m.estudianteNombre }}</td>
+            <td class="px-3 py-2">{{ m.libroTitulo }}</td>
+            <td class="px-3 py-2">{{ m.diasAtraso }} día(s)</td>
+            <td class="px-3 py-2 font-medium">{{ m.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</td>
+            <td class="px-3 py-2">{{ m.fechaGeneracion }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-red-50]="m.estado === 'PENDIENTE'" [class.text-acento]="m.estado === 'PENDIENTE'"
+                [class.bg-primario-claro]="m.estado === 'PAGADA'" [class.text-primario-oscuro]="m.estado === 'PAGADA'">
+                {{ m.estado === 'PENDIENTE' ? 'Pendiente' : 'Pagada' }}
+              </span>
+            </td>
+            @if (puedeCobrar) {
+              <td class="px-3 py-2">
+                @if (m.estado === 'PENDIENTE') {
+                  <button type="button" (click)="pendiente.set(m)"
+                    class="text-xs rounded-lg px-3 py-1 bg-primario text-white hover:bg-primario-oscuro">Cobrar</button>
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="puedeCobrar ? 7 : 6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron multas' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+@if (pendiente(); as m) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Cobrar multa</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Cobrar <strong>{{ m.monto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</strong> a
+        <strong>{{ m.estudianteNombre }}</strong> por el atraso de «{{ m.libroTitulo }}»?
+      </p>
+      <p class="text-xs text-gray-500 mt-2">El pago se registra en el año lectivo activo y la multa queda pagada.</p>
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="pendiente.set(null)" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmarCobro()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+          {{ procesando() ? 'Cobrando...' : 'Cobrar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

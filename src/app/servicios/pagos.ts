@@ -92,4 +92,8 @@ export class Pagos {
   consultarComprobante(id: number): Observable<ComprobanteResumen> {
     return this.http.get<ComprobanteResumen>(`${this.url}/${id}/comprobante`);
   }
+
+  pagarMulta(idMulta: number): Observable<PagoResumen> {
+    return this.http.post<PagoResumen>(`${this.url}/multa`, { idMulta });
+  }
 }

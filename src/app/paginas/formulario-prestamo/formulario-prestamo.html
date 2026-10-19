@@ -1,0 +1,56 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
+    class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
+    <h4 class="text-lg font-semibold text-texto">Registrar préstamo</h4>
+    <p class="text-sm text-gray-500">
+      La fecha de devolución se calcula con el plazo vigente. No se presta a quien tiene préstamos en mora.
+    </p>
+
+    <div>
+      <label for="idLibro" class="block text-sm font-medium text-texto mb-1">Libro</label>
+      <select id="idLibro" formControlName="idLibro"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option [ngValue]="null" disabled>Seleccione un libro</option>
+        @for (l of libros(); track l.idLibro) {
+          <option [ngValue]="l.idLibro">{{ l.titulo }} · {{ l.ejemplaresDisponibles }} disponible(s)</option>
+        }
+      </select>
+      @if (formulario.controls.idLibro.touched && formulario.controls.idLibro.invalid) {
+        <p class="text-sm text-acento mt-1">Seleccione un libro</p>
+      }
+      @if (libros().length === 0) {
+        <p class="text-xs text-gray-500 mt-1">No hay libros activos con ejemplares disponibles.</p>
+      }
+    </div>
+
+    <div>
+      <label for="buscar" class="block text-sm font-medium text-texto mb-1">Prestatario (estudiante o maestro)</label>
+      <input id="buscar" type="search" placeholder="Buscar por nombre o CUI"
+        (input)="alBuscar($any($event.target).value)"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-primario" />
+      <select formControlName="idPrestatario" aria-label="Prestatario"
+        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option [ngValue]="null" disabled>Seleccione un prestatario</option>
+        @for (p of prestatarios(); track p.idUsuario) {
+          <option [ngValue]="p.idUsuario">{{ p.nombre }} · {{ p.tipo === 'MAESTRO' ? 'Maestro' : 'Estudiante' }}</option>
+        }
+      </select>
+      @if (formulario.controls.idPrestatario.touched && formulario.controls.idPrestatario.invalid) {
+        <p class="text-sm text-acento mt-1">Seleccione un prestatario</p>
+      }
+    </div>
+
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" (click)="cancelar()" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+      <button type="submit" [disabled]="guardando()"
+        class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+        {{ guardando() ? 'Registrando...' : 'Registrar préstamo' }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,159 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Préstamos</h2>
+  <p class="text-sm text-gray-500">Libros prestados a estudiantes y maestros. En mora: pasada la fecha esperada y sin devolver.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h3 class="text-lg font-semibold text-texto">Listado</h3>
+    <button type="button" (click)="creando.set(true)"
+      class="rounded-lg bg-primario text-white text-sm px-3 py-2 hover:bg-primario-oscuro">Registrar préstamo</button>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 mb-4">
+    <select (change)="alCambiarEstado($any($event.target).value)"
+      class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+      <option value="">Todos los estados</option>
+      <option value="PRESTADO">Sin devolver</option>
+      <option value="EN_MORA">En mora</option>
+      <option value="DEVUELTO">Devueltos</option>
+    </select>
+    <label class="flex items-center gap-2 text-sm text-texto">Prestados desde
+      <input type="date" (change)="alCambiarDesde($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+    </label>
+    <label class="flex items-center gap-2 text-sm text-texto">hasta
+      <input type="date" (change)="alCambiarHasta($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+    </label>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+  }
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr>
+          <th class="px-3 py-2">Libro</th>
+          <th class="px-3 py-2">Prestatario</th>
+          <th class="px-3 py-2">Préstamo</th>
+          <th class="px-3 py-2">Esperada</th>
+          <th class="px-3 py-2">Estado</th>
+          <th class="px-3 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of prestamos(); track p.idPrestamo) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2 font-medium">{{ p.libroTitulo }}</td>
+            <td class="px-3 py-2">
+              {{ p.prestatarioNombre }}
+              <span class="block text-xs text-gray-500">{{ p.tipoPrestatario === 'MAESTRO' ? 'Maestro' : 'Estudiante' }}</span>
+            </td>
+            <td class="px-3 py-2">{{ p.fechaPrestamo }}</td>
+            <td class="px-3 py-2">{{ p.fechaEsperada }}</td>
+            <td class="px-3 py-2">
+              @if (p.devuelto) {
+                <span class="rounded-full px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-600">
+                  Devuelto {{ p.fechaDevolucion }}
+                </span>
+                @if (p.diasAtraso > 0) {
+                  <span class="block text-xs text-gray-500 mt-1">
+                    {{ p.diasAtraso }} día(s) de atraso
+                    @if (p.multaMonto) {
+                      · multa {{ p.multaMonto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}
+                      ({{ p.multaEstado === 'PAGADA' ? 'pagada' : 'pendiente' }})
+                    } @else {
+                      · sin multa
+                    }
+                  </span>
+                }
+              } @else if (p.enMora) {
+                <span class="rounded-full px-2 py-0.5 text-xs font-medium bg-red-50 text-acento">
+                  En mora · {{ p.diasAtraso }} día(s)
+                </span>
+              } @else {
+                <span class="rounded-full px-2 py-0.5 text-xs font-medium bg-primario-claro text-primario-oscuro">Prestado</span>
+              }
+            </td>
+            <td class="px-3 py-2">
+              @if (!p.devuelto) {
+                <button type="button" (click)="pendiente.set(p)"
+                  class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">Devolver</button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="px-3 py-6 text-center text-gray-500">
+              {{ cargando() ? 'Cargando...' : 'No se encontraron préstamos' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex items-center justify-between mt-4">
+    <button type="button" (click)="anterior()" [disabled]="pagina() === 1"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Anterior</button>
+    <span class="text-sm text-texto">Página {{ pagina() }}</span>
+    <button type="button" (click)="siguiente()" [disabled]="!hayMas()"
+      class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-40">Siguiente</button>
+  </div>
+</section>
+
+@if (creando()) {
+  <app-formulario-prestamo (guardado)="alGuardar()" (cancelado)="creando.set(false)" />
+}
+
+<!-- Confirmar devolucion -->
+@if (pendiente(); as p) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Registrar devolución</h4>
+      <p class="text-sm text-texto mt-2">
+        ¿Devuelve <strong>{{ p.libroTitulo }}</strong> {{ p.prestatarioNombre }}?
+      </p>
+      @if (p.enMora) {
+        <p class="text-xs text-acento mt-2">
+          Tiene {{ p.diasAtraso }} día(s) de atraso.
+          {{ p.tipoPrestatario === 'MAESTRO' ? 'Es maestro: se registra el atraso pero no hay multa.' : 'Se generará una multa pendiente.' }}
+        </p>
+      }
+      <div class="flex justify-end gap-2 mt-5">
+        <button type="button" (click)="pendiente.set(null)" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cancelar</button>
+        <button type="button" (click)="confirmarDevolucion()" [disabled]="procesando()"
+          class="px-3 py-1 rounded-lg bg-primario text-white disabled:opacity-60">
+          {{ procesando() ? 'Registrando...' : 'Devolver' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Resultado de una devolucion con atraso -->
+@if (resultado(); as r) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
+      <h4 class="text-lg font-semibold text-texto">Devolución registrada</h4>
+      <p class="text-sm text-texto mt-2">
+        <strong>{{ r.libroTitulo }}</strong> se devolvió con {{ r.diasAtraso }} día(s) de atraso.
+      </p>
+      @if (r.multaMonto) {
+        <p class="text-sm mt-3 rounded-lg bg-red-50 text-acento px-3 py-2">
+          Multa generada: <strong>{{ r.multaMonto | currency: 'GTQ' : 'symbol-narrow' : '1.2-2' }}</strong>.
+          La paga en Secretaría.
+        </p>
+      } @else {
+        <p class="text-sm mt-3 rounded-lg bg-primario-claro/50 px-3 py-2">Maestro: se registra el atraso, sin multa.</p>
+      }
+      <div class="flex justify-end mt-5">
+        <button type="button" (click)="resultado.set(null)" class="px-3 py-1 rounded-lg bg-primario text-white">Entendido</button>
+      </div>
+    </div>
+  </div>
+}
