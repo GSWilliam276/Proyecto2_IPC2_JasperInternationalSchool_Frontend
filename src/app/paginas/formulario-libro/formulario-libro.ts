@@ -23,6 +23,7 @@ export class FormularioLibro implements OnInit {
   protected readonly esEdicion = computed(() => this.libro() !== null);
   protected readonly guardando = signal(false);
   protected readonly error = signal('');
+  protected readonly archivo = signal<File | null>(null);
 
   protected readonly formulario = this.fb.group({
     titulo: this.fb.nonNullable.control('', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(150)]),
@@ -67,15 +68,46 @@ export class FormularioLibro implements OnInit {
       ? this.servicio.editar(actual.idLibro, datos)
       : this.servicio.registrar(datos);
     peticion.subscribe({
-      next: () => {
-        this.guardando.set(false);
-        this.guardado.emit();
+      next: (resultado) => {
+        const id = actual ? actual.idLibro : (resultado as LibroResumen).idLibro;
+        const f = this.archivo();
+        if (!f) {
+          this.guardando.set(false);
+          this.guardado.emit();
+          return;
+        }
+        this.servicio.subirImagen(id, f).subscribe({
+          next: () => {
+            this.guardando.set(false);
+            this.guardado.emit();
+          },
+          error: (e) => {
+            this.guardando.set(false);
+            this.error.set(e.error?.mensaje ?? 'El libro se guardó, pero no se pudo subir la imagen');
+          },
+        });
       },
       error: (e) => {
         this.guardando.set(false);
         this.error.set(e.error?.mensaje ?? 'No se pudo guardar el libro');
       },
     });
+  }
+
+  protected alElegirArchivo(evento: Event): void {
+    const f = (evento.target as HTMLInputElement).files?.[0] ?? null;
+    if (f && !['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
+      this.error.set('La imagen debe ser JPG, PNG o WebP');
+      this.archivo.set(null);
+      return;
+    }
+    if (f && f.size > 2 * 1024 * 1024) {
+      this.error.set('La imagen no puede pasar de 2 MB');
+      this.archivo.set(null);
+      return;
+    }
+    this.error.set('');
+    this.archivo.set(f);
   }
 
   protected cancelar(): void {

@@ -12,6 +12,7 @@ export interface LibroResumen {
   ejemplaresDisponibles: number;
   ejemplaresPrestados: number;
   estado: string;
+  tieneImagen: boolean;
 }
 
 export interface SolicitudLibro {
@@ -49,5 +50,16 @@ export class Libros {
 
   desactivar(id: number): Observable<void> {
     return this.http.put<void>(`${this.url}/${id}/desactivar`, null);
+  }
+
+  subirImagen(id: number, archivo: File): Observable<void> {
+    const datos = new FormData();
+    datos.append('archivo', archivo);
+    return this.http.post<void>(`${this.url}/${id}/imagen`, datos);
+  }
+
+  /** La imagen se pide con el token (un <img> no lo manda) y se muestra como URL temporal */
+  imagen(id: number): Observable<Blob> {
+    return this.http.get(`${this.url}/${id}/imagen`, { responseType: 'blob' });
   }
 }

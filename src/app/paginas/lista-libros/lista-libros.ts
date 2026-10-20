@@ -21,6 +21,7 @@ export class ListaLibros implements OnInit {
   protected readonly creando = signal(false);
   protected readonly editando = signal<LibroResumen | null>(null);
   protected readonly hayMas = computed(() => this.libros().length === this.tamano);
+  protected readonly portadas = signal<Record<number, string>>({});
 
   private busqueda = '';
   private temporizador: ReturnType<typeof setTimeout> | undefined;
@@ -97,5 +98,15 @@ export class ListaLibros implements OnInit {
       this.pagina.set(1);
     }
     this.cargar();
+  }
+
+  private cargarPortadas(lista: LibroResumen[]): void {
+    for (const l of lista) {
+      if (l.tieneImagen && !this.portadas()[l.idLibro]) {
+        this.servicio.imagen(l.idLibro).subscribe({
+          next: (blob) => this.portadas.update((p) => ({ ...p, [l.idLibro]: URL.createObjectURL(blob) })),
+        });
+      }
+    }
   }
 }
