@@ -12,6 +12,7 @@ export interface Sesion {
   idUsuario: number;
   nombre: string;
   rol: string;
+  contrasenaProvisional: boolean;
 }
 
 /**

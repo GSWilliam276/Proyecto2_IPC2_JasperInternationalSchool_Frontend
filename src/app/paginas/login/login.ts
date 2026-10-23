@@ -19,8 +19,8 @@ export class Login {
   private readonly autenticacion = inject(Autenticacion);
   private readonly router = inject(Router); //El que cambia de pantalla
 
-  //Signal es una variable que avisa a la pantalla cuando cambia su valor,
-  //asi el HTML se actualiza solo. Se lee como funcion: cargando()
+  //Uso de signal para que avise a la pantalla cuando cambia su valor,
+  //asi el HTML se actualiza solo
   protected readonly cargando = signal(false); //true mientras se espera al backend
   protected readonly error = signal(''); //mensaje de error para mostrar
   //se elimino "bienvenida", era temporal y ahora se redirige al panel
@@ -48,14 +48,13 @@ export class Login {
     this.error.set('');
     const { correo, contrasena } = this.formulario.getRawValue();
 
-    //subscribe es quien realmente dispara la peticion HTTP.
     //Sin subscribe, la peticion no se envia.
     this.autenticacion.iniciarSesion(correo, contrasena).subscribe({
       //next: el backend respondio con exito (200)
       next: (sesion) => {
         this.cargando.set(false);
-        //segun el rol, cada persona entra a su propio panel
-        this.router.navigate([this.rutaPorRol(sesion.rol)]);
+        //con contraseña provisional se obliga a cambiarla antes de seguir
+        this.router.navigate([sesion.contrasenaProvisional ? '/cambiar-contrasena' : this.rutaPorRol(sesion.rol)]);
       },
       //error: el backend respondio con 401 u otro error, o no se pudo conectar
       error: (e) => {
@@ -76,9 +75,11 @@ export class Login {
       case 'ADMIN':
       case 'SECRETARIA':
       case 'BIBLIOTECARIO':
+      case 'MAESTRO':
+      case 'ESTUDIANTE':
         return '/inicio';
       default:
-        return '/sin-acceso'; //Maestro y Estudiante: sus paneles todavia no existen
+        return '/sin-acceso'; 
     }
   }
 }
