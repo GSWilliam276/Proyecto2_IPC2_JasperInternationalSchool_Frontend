@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Autenticacion } from '../../servicios/autenticacion';
 import { gruposPorRol } from '../../menu';
+import { ModalContrasenaProvisional } from '../../paginas/modal-contrasena-provisional/modal-contrasena-provisional';
 
 /**
  * Marco comun de todas las pantallas con sesion: menu lateral, barra superior y pie
@@ -9,7 +10,7 @@ import { gruposPorRol } from '../../menu';
  */
 @Component({
   selector: 'app-marco',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ModalContrasenaProvisional],
   templateUrl: './marco.html',
 })
 export class Marco {
@@ -35,4 +36,6 @@ export class Marco {
       .map((p) => p[0].toUpperCase())
       .join('');
   }
+
+  protected readonly provisional = signal(this.sesion?.contrasenaProvisional ?? false);
 }

@@ -54,7 +54,7 @@ export class Login {
       next: (sesion) => {
         this.cargando.set(false);
         //con contraseña provisional se obliga a cambiarla antes de seguir
-        this.router.navigate([sesion.contrasenaProvisional ? '/cambiar-contrasena' : this.rutaPorRol(sesion.rol)]);
+        this.router.navigate([this.rutaPorRol(sesion.rol)]);
       },
       //error: el backend respondio con 401 u otro error, o no se pudo conectar
       error: (e) => {

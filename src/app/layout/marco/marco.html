@@ -80,3 +80,6 @@
     </footer>
   </div>
 </div>
+@if (provisional()) {
+  <app-modal-contrasena-provisional (cambiada)="provisional.set(false)" (salir)="cerrarSesion()" />
+}

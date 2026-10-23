@@ -28,6 +28,7 @@ import { ListaSolvencias } from './paginas/lista-solvencias/lista-solvencias';
 import { ListaLibros } from './paginas/lista-libros/lista-libros';
 import { ListaPrestamos } from './paginas/lista-prestamos/lista-prestamos';
 import { ListaMultas } from './paginas/lista-multas/lista-multas';
+import { ListaMisCursos } from './paginas/lista-mis-cursos/lista-mis-cursos';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -166,6 +167,12 @@ export const routes: Routes = [
         component: ListaMultas,
         canActivate: [rolGuard],
         data: { roles: ['BIBLIOTECARIO', 'SECRETARIA'] },
+      },
+      {
+        path: 'mis-cursos',
+        component: ListaMisCursos,
+        canActivate: [rolGuard],
+        data: { roles: ['MAESTRO'] },
       },
     ],
   },

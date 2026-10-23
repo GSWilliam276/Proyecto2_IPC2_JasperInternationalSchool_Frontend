@@ -67,4 +67,12 @@ export class Autenticacion {
       contrasenaNueva,
     });
   }
+
+  /** Apaga la bandera de contraseña provisional en la sesion guardada */
+  marcarContrasenaCambiada(): void {
+    const s = this.obtenerSesion();
+    if (s) {
+      sessionStorage.setItem('sesion', JSON.stringify({ ...s, contrasenaProvisional: false }));
+    }
+  }
 }

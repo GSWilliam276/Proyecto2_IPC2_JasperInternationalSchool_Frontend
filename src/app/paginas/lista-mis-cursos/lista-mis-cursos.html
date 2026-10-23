@@ -1,0 +1,68 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Mis cursos</h2>
+  <p class="text-sm text-gray-500">Cursos y secciones que tiene asignados en el año lectivo activo.</p>
+</div>
+
+@if (error()) {
+  <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mb-3">{{ error() }}</p>
+}
+
+<section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  @for (a of asignaciones(); track a.idAsignacion) {
+    <article class="bg-white rounded-xl shadow-sm border-t-4 border-primario p-5">
+      <h3 class="text-lg font-semibold text-primario-oscuro">{{ a.cursoNombre }}</h3>
+      <p class="text-sm mt-1">{{ a.gradoNombre }} · Sección {{ a.seccionNombre }}</p>
+      @if (a.carreraNombre) {
+        <p class="text-xs text-gray-500">{{ a.carreraNombre }}</p>
+      }
+      <p class="text-xs text-gray-500 mt-1">{{ a.anioNombre }}</p>
+      <button type="button" (click)="verNomina(a)"
+        class="mt-4 text-sm rounded-lg px-3 py-1.5 bg-primario text-white hover:bg-primario-oscuro">
+        Ver nómina
+      </button>
+    </article>
+  } @empty {
+    <p class="text-sm text-gray-500 col-span-full">
+      {{ cargando() ? 'Cargando...' : 'No tiene cursos asignados en el año lectivo activo.' }}
+    </p>
+  }
+</section>
+
+@if (viendo(); as a) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-lg max-w-lg w-full p-6 my-auto">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h4 class="text-lg font-semibold text-texto">Nómina de {{ a.cursoNombre }}</h4>
+          <p class="text-sm text-gray-500">{{ a.gradoNombre }} · Sección {{ a.seccionNombre }}</p>
+        </div>
+        <button type="button" (click)="viendo.set(null)" aria-label="Cerrar" class="text-gray-400 hover:text-texto">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <table class="w-full text-sm text-left mt-4">
+        <thead class="bg-primario-claro text-primario-oscuro">
+          <tr><th class="px-3 py-2">#</th><th class="px-3 py-2">Estudiante</th><th class="px-3 py-2">CUI</th></tr>
+        </thead>
+        <tbody>
+          @for (e of alumnos(); track e.idEstudiante; let i = $index) {
+            <tr class="border-b border-gray-100">
+              <td class="px-3 py-2">{{ i + 1 }}</td>
+              <td class="px-3 py-2 font-medium">{{ e.nombre }}</td>
+              <td class="px-3 py-2 text-gray-500">{{ e.cui }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">
+              {{ cargandoNomina() ? 'Cargando...' : 'No hay estudiantes inscritos en esta sección' }}
+            </td></tr>
+          }
+        </tbody>
+      </table>
+      <p class="text-xs text-gray-500 mt-3">{{ alumnos().length }} estudiante(s) inscrito(s).</p>
+      <div class="flex justify-end mt-4">
+        <button type="button" (click)="viendo.set(null)" class="px-3 py-1 rounded-lg border border-gray-300 text-texto">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

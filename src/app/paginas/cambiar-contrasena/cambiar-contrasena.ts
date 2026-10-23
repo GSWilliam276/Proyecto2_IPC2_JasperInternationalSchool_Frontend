@@ -74,6 +74,7 @@ export class CambiarContrasena {
     this.autenticacion.cambiarContrasena(contrasenaActual, contrasenaNueva).subscribe({
       next: () => {
         this.guardando.set(false);
+        this.autenticacion.marcarContrasenaCambiada();
         this.exito.set(true);
         this.formulario.reset(); //Se limpian los tres campos
       },

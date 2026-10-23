@@ -1,0 +1,46 @@
+<div class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 overflow-y-auto">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate
+    class="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-3 my-auto">
+    <h4 class="text-lg font-semibold text-texto"><i class="bi bi-shield-lock text-primario"></i> Cambie su contraseña</h4>
+    <p class="text-sm text-gray-600">
+      Su contraseña es provisional. Por su seguridad, debe cambiarla para continuar.
+    </p>
+
+    @for (c of campos; track c.nombre) {
+      <div>
+        <label [for]="c.nombre" class="block text-sm font-medium text-texto mb-1">{{ c.etiqueta }}</label>
+        <div class="relative">
+          <input [id]="c.nombre" [type]="esVisible(c.nombre) ? 'text' : 'password'" [formControlName]="c.nombre"
+            autocomplete="off"
+            class="w-full rounded-lg border border-gray-300 pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+          <button type="button" (click)="alternarVisibilidad(c.nombre)"
+            [attr.aria-label]="esVisible(c.nombre) ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-primario">
+            <i [class]="esVisible(c.nombre) ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        @if (formulario.get(c.nombre)?.touched && formulario.get(c.nombre)?.invalid) {
+          <p class="text-sm text-acento mt-1">{{ c.aviso }}</p>
+        }
+      </div>
+    }
+
+    @if (formulario.hasError('noCoinciden') && formulario.controls.confirmar.touched) {
+      <p class="text-sm text-acento">La confirmación no coincide</p>
+    }
+    @if (formulario.hasError('igualAActual') && formulario.controls.contrasenaNueva.touched) {
+      <p class="text-sm text-acento">La nueva debe ser distinta de la actual</p>
+    }
+    @if (error()) {
+      <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2">{{ error() }}</p>
+    }
+
+    <div class="flex items-center justify-between pt-2">
+      <button type="button" (click)="salir.emit()" class="text-sm text-gray-500 hover:underline">Cerrar sesión</button>
+      <button type="submit" [disabled]="guardando()"
+        class="px-4 py-2 rounded-lg bg-primario text-white disabled:opacity-60">
+        {{ guardando() ? 'Guardando...' : 'Cambiar contraseña' }}
+      </button>
+    </div>
+  </form>
+</div>
