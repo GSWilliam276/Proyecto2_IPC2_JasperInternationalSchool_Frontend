@@ -1,0 +1,134 @@
+<div class="mb-4">
+  <h2 class="text-xl font-semibold text-texto">Asistencia</h2>
+  <p class="text-sm text-gray-500">Tome la asistencia de un curso por fecha, corríjala si se equivocó y consulte el historial.</p>
+</div>
+
+<section class="bg-white rounded-xl shadow-md p-6">
+  <div class="flex flex-wrap items-end gap-4">
+    <div>
+      <label for="curso" class="block text-sm font-medium text-texto mb-1">Curso y sección</label>
+      <select id="curso" (change)="alElegirCurso($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option value="">Seleccione un curso</option>
+        @for (a of asignaciones(); track a.idAsignacion) {
+          <option [value]="a.idAsignacion">{{ a.cursoNombre }} · {{ a.gradoNombre }} {{ a.seccionNombre }}</option>
+        }
+      </select>
+    </div>
+    <div>
+      <label for="fecha" class="block text-sm font-medium text-texto mb-1">Fecha</label>
+      <input id="fecha" type="date" [value]="fecha()" [max]="hoy" (change)="alCambiarFecha($any($event.target).value)"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primario" />
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-acento bg-red-50 rounded-lg px-3 py-2 mt-4">{{ error() }}</p>
+  }
+  @if (exito()) {
+    <p class="text-sm text-primario-oscuro bg-primario-claro rounded-lg px-3 py-2 mt-4">
+      <i class="bi bi-check-circle"></i> {{ exito() }}
+    </p>
+  }
+
+  @if (idAsignacion() !== null) {
+    <div class="flex items-center justify-between mt-5 mb-2">
+      <h3 class="text-lg font-semibold text-texto">
+        {{ yaTomada() ? 'Asistencia del ' + formatearFecha(fecha()) + ' (puede corregirla)' : 'Tomar asistencia del ' + formatearFecha(fecha()) }}
+      </h3>
+      <div class="flex gap-2">
+        <button type="button" (click)="todos(true)" class="text-xs rounded-lg px-3 py-1 border border-primario text-primario hover:bg-primario-claro">Todos presentes</button>
+        <button type="button" (click)="todos(false)" class="text-xs rounded-lg px-3 py-1 border border-acento text-acento hover:bg-red-50">Todos ausentes</button>
+      </div>
+    </div>
+
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr><th class="px-3 py-2">#</th><th class="px-3 py-2">Estudiante</th><th class="px-3 py-2">Asistencia</th></tr>
+      </thead>
+      <tbody>
+        @for (p of planilla(); track p.idEstudiante; let i = $index) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">{{ i + 1 }}</td>
+            <td class="px-3 py-2 font-medium">
+              {{ p.estudianteNombre }}
+              @if (yaTomada() && p.presente === null) {
+                <span class="ml-1 text-xs rounded-full bg-gray-200 text-gray-600 px-2 py-0.5">Sin registro</span>
+              }
+            </td>
+            <td class="px-3 py-2">
+              <div class="flex gap-2">
+                <button type="button" (click)="marcar(p.idEstudiante, true)"
+                  class="text-xs rounded-lg px-3 py-1 border"
+                  [class.bg-primario]="marcas()[p.idEstudiante] === true" [class.text-white]="marcas()[p.idEstudiante] === true"
+                  [class.border-primario]="true">Presente</button>
+                <button type="button" (click)="marcar(p.idEstudiante, false)"
+                  class="text-xs rounded-lg px-3 py-1 border"
+                  [class.bg-acento]="marcas()[p.idEstudiante] === false" [class.text-white]="marcas()[p.idEstudiante] === false"
+                  [class.border-acento]="true">Ausente</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">
+            {{ cargando() ? 'Cargando...' : 'No hay estudiantes inscritos en esta sección' }}
+          </td></tr>
+        }
+      </tbody>
+    </table>
+
+    @if (planilla().length > 0) {
+      <div class="flex justify-end mt-4">
+        <button type="button" (click)="guardar()" [disabled]="guardando()"
+          class="rounded-lg bg-primario text-white text-sm px-4 py-2 hover:bg-primario-oscuro disabled:opacity-60">
+          {{ guardando() ? 'Guardando...' : (yaTomada() ? 'Guardar correcciones' : 'Registrar asistencia') }}
+        </button>
+      </div>
+    }
+  }
+</section>
+
+@if (idAsignacion() !== null) {
+  <section class="bg-white rounded-xl shadow-md p-6 mt-6">
+    <h3 class="text-lg font-semibold text-texto mb-3">Historial</h3>
+    <div class="flex flex-wrap items-center gap-3 mb-4">
+      <select (change)="filtroEstudiante.set($any($event.target).value ? +$any($event.target).value : null); alFiltrar()"
+        class="rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primario">
+        <option value="">Todos los estudiantes</option>
+        @for (p of planilla(); track p.idEstudiante) {
+          <option [value]="p.idEstudiante">{{ p.estudianteNombre }}</option>
+        }
+      </select>
+      <label class="flex items-center gap-2 text-sm text-texto">Desde
+        <input type="date" (change)="desde.set($any($event.target).value); alFiltrar()"
+          class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+      <label class="flex items-center gap-2 text-sm text-texto">Hasta
+        <input type="date" (change)="hasta.set($any($event.target).value); alFiltrar()"
+          class="rounded-lg border border-gray-300 px-2 py-1.5 text-sm" />
+      </label>
+    </div>
+    <table class="w-full text-sm text-left">
+      <thead class="bg-primario-claro text-primario-oscuro">
+        <tr><th class="px-3 py-2">Fecha</th><th class="px-3 py-2">Estudiante</th><th class="px-3 py-2">Asistencia</th></tr>
+      </thead>
+      <tbody>
+        @for (h of historial(); track h.fecha + '-' + h.idEstudiante) {
+          <tr class="border-b border-gray-100">
+            <td class="px-3 py-2">{{ formatearFecha(h.fecha) }}</td>
+            <td class="px-3 py-2 font-medium">{{ h.estudianteNombre }}</td>
+            <td class="px-3 py-2">
+              <span class="rounded-full px-2 py-0.5 text-xs font-medium"
+                [class.bg-primario-claro]="h.presente" [class.text-primario-oscuro]="h.presente"
+                [class.bg-red-50]="!h.presente" [class.text-acento]="!h.presente">
+                {{ h.presente ? 'Presente' : 'Ausente' }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">No hay asistencia registrada</td></tr>
+        }
+      </tbody>
+    </table>
+  </section>
+}

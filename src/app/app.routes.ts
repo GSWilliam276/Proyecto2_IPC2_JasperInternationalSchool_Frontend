@@ -29,6 +29,7 @@ import { ListaLibros } from './paginas/lista-libros/lista-libros';
 import { ListaPrestamos } from './paginas/lista-prestamos/lista-prestamos';
 import { ListaMultas } from './paginas/lista-multas/lista-multas';
 import { ListaMisCursos } from './paginas/lista-mis-cursos/lista-mis-cursos';
+import { AsistenciaMaestro } from './paginas/asistencia-maestro/asistencia-maestro';
 
 /**
  * Cada ruta asocia una direccion del navegador con una pantalla
@@ -171,6 +172,12 @@ export const routes: Routes = [
       {
         path: 'mis-cursos',
         component: ListaMisCursos,
+        canActivate: [rolGuard],
+        data: { roles: ['MAESTRO'] },
+      },
+      {
+        path: 'asistencia',
+        component: AsistenciaMaestro,
         canActivate: [rolGuard],
         data: { roles: ['MAESTRO'] },
       },

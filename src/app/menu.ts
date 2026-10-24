@@ -34,6 +34,7 @@ const LIBROS: OpcionMenu = { ruta: '/libros', etiqueta: 'Libros', icono: 'book-h
 const PRESTAMOS: OpcionMenu = { ruta: '/prestamos', etiqueta: 'Préstamos', icono: 'arrow-left-right' };
 const MULTAS: OpcionMenu = { ruta: '/multas', etiqueta: 'Multas', icono: 'exclamation-diamond' };
 const MIS_CURSOS: OpcionMenu = { ruta: '/mis-cursos', etiqueta: 'Mis cursos', icono: 'journal-text' };
+const ASISTENCIA: OpcionMenu = { ruta: '/asistencia', etiqueta: 'Asistencia', icono: 'calendar-check' };
 
 //Grupos que comparten Admin y SuperAdmin
 
@@ -65,7 +66,7 @@ export function gruposPorRol(rol: string | undefined): GrupoMenu[] {
     case 'BIBLIOTECARIO':
       return [{ titulo: 'Biblioteca', opciones: [LIBROS, PRESTAMOS, MULTAS] }];
     case 'MAESTRO':
-      return [{ titulo: 'Docencia', opciones: [MIS_CURSOS] }];
+      return [{ titulo: 'Docencia', opciones: [MIS_CURSOS, ASISTENCIA] }];
     default:
       return [];
   }
